@@ -1,0 +1,22 @@
+# .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/.vs/
+
+# EF migrations (optional — remove if you want to track migrations)
+# backend/**/Migrations/
+
+# ASP.NET
+backend/**/appsettings.Development.json
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
