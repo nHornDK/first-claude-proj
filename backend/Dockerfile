@@ -11,6 +11,6 @@ RUN dotnet publish Api/Api.csproj -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
+# EXPOSE 443
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Api.dll"]

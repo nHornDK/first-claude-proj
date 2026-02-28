@@ -24,10 +24,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-      - "443:443"
+      # - "443:443"
     environment:
       HTTP_PORTS: 80
-      HTTPS_PORTS: 443
+      # HTTPS_PORTS: 443
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=FirstClaudeDb;Username=postgres;Password=postgres"
     depends_on:
