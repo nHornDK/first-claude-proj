@@ -21,7 +21,10 @@ echo %JSON_FILE%
   echo   "Jwt__Issuer": "first-claude-proj",
   echo   "Jwt__Audience": "first-claude-proj",
   echo   "DemoUser__Username": %DEMO_USERNAME%,
-  echo   "DemoUser__Password": %DEMO_PASSWORD%
+  echo   "DemoUser__Password": %DEMO_PASSWORD%,
+  echo   "POSTGRES_USER": "postgres",
+  echo   "POSTGRES_PASSWORD": "postgres",
+  echo   "POSTGRES_DB": "FirstClaudeDb"
   echo }
 ) > "%JSON_FILE%"
 
