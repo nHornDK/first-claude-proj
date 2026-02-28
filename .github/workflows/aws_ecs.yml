@@ -19,6 +19,10 @@ env:
   ECS_TASK_DEFINITION: .aws/task-definition.json
   CONTAINER_NAME: dendo_container
 
+concurrency:
+  group: deploy-ecs
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -77,6 +81,7 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
+        timeout-minutes: 10
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
