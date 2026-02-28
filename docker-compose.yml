@@ -27,7 +27,7 @@ services:
       - "8080:8080"
       - "443:443"
     environment:
-      ASPNETCORE_URLS: "http://*:8080,http://*:80,https://*:443"
+      # ASPNETCORE_URLS: "http://*:8080,http://*:80,https://*:443"
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=FirstClaudeDb;Username=postgres;Password=postgres"
     depends_on:

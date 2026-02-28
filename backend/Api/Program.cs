@@ -71,7 +71,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-
+app.Urls.Add("http://*:80");
+app.Urls.Add("http://*:8080");
+app.Urls.Add("https://*:443");
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>().Database;
