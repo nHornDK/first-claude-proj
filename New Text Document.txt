@@ -7,3 +7,11 @@ https://eu-north-1.console.aws.amazon.com/ecs/home?region=eu-north-1#/firstRun
 
 
 claude --resume 055bb550-6017-483a-b3e2-65d6d965fde9
+
+refactor pipeline aws_ecs.yml to build the backend as a docker image and deploy that to aws
+
+
+Before the pipeline will work end-to-end, you'll need to:
+  1. Create the Secrets Manager secret with your DB connection string, JWT config, and demo user credentials
+  2. Update the ARNs in .aws/task-definition.json (ACCOUNT_ID, YOUR_SECRET_NAME)
+  3. Ensure the ECS task execution role has secretsmanager:GetSecretValue permission
