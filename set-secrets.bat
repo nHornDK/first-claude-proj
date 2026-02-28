@@ -4,11 +4,12 @@ REM   set-secrets.bat
 REM
 REM WARNING: do not commit this file with real values filled in.
 
-set DB_HOST=CHANGE_ME
-set DB_PASSWORD=CHANGE_ME
-set JWT_SECRET=CHANGE_ME
-set DEMO_USERNAME=CHANGE_ME
-set DEMO_PASSWORD=CHANGE_ME
+set DB_HOST=db
+set DB_PASSWORD=Xk#9mP$vL2qN@8rT3
+
+set JWT_SECRET=Yd$8cZ!3pX%tG6sW
+set DEMO_USERNAME=admin
+set DEMO_PASSWORD=wJ&5nR@2bF#mK7hQ
 
 set "JSON_FILE=%tmp_secret.json"
 echo %JSON_FILE%
