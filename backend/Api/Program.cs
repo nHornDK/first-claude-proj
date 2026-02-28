@@ -15,9 +15,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    {
+        if (builder.Environment.IsDevelopment())
+            policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        else
+            policy.WithOrigins(builder.Configuration["AllowedOrigins"] ?? "")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddScoped<TokenService>();
