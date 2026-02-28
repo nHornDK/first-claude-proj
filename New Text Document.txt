@@ -29,3 +29,25 @@ Before the pipeline will work end-to-end, you'll need to:
   aws iam put-role-policy --role-name ecsTaskExecutionRole --policy-name DendoSecretsAccess --policy-document "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"arn:aws:secretsmanager:eu-north-1:654862558684:secret:DENDO_SECRET*\"}]}"
 aws ecs register-task-definition --cli-input-json file://.aws/task-definition.json
   aws iam get-role-policy     --role-name ecsTaskExecutionRole     --policy-name DendoSecretsAccess
+
+
+
+  The task definition doesn't actually need structural changes — ConnectionStrings__DefaultConnection is already a
+  Secrets Manager reference, so the JSON is provider-agnostic. The only thing that needs updating is the secret value in
+   AWS Secrets Manager itself.
+
+  You need to update the DENDO_SECRET in Secrets Manager so ConnectionStrings__DefaultConnection contains a PostgreSQL
+  connection string pointing at your RDS instance, e.g.:
+
+  Host=<rds-endpoint>;Port=5432;Database=FirstClaudeDb;Username=postgres;Password=<password>
+
+  You can do that via CLI:
+  aws secretsmanager update-secret \
+    --secret-id DENDO_SECRET \
+    --secret-string '{"ConnectionStrings__DefaultConnection":"Host=<rds-endpoint>;Port=5432;Database=FirstClaudeDb;Usern
+  ame=postgres;Password=<password>","Jwt__Secret":"...","Jwt__Issuer":"...","Jwt__Audience":"...","DemoUser__Username":"
+  ...","DemoUser__Password":"..."}'
+
+  Or via the AWS console under Secrets Manager → DENDO_SECRET → Edit.
+
+  Do you have an RDS PostgreSQL instance set up, or do you still need to provision one?
