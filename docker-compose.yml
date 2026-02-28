@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     image: postgres:17
     environment:
       POSTGRES_DB: FirstClaudeDb
@@ -14,6 +14,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
   api:
     image: ${API_IMAGE:-first-claude-proj-api:latest}
@@ -24,10 +26,15 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=FirstClaudeDb;Username=postgres;Password=postgres"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=FirstClaudeDb;Username=postgres;Password=postgres"
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
 
 volumes:
   postgres_data:
