@@ -27,3 +27,5 @@ Before the pipeline will work end-to-end, you'll need to:
 
   3. Add the Secrets Manager inline policy:
   aws iam put-role-policy --role-name ecsTaskExecutionRole --policy-name DendoSecretsAccess --policy-document "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"arn:aws:secretsmanager:eu-north-1:654862558684:secret:DENDO_SECRET*\"}]}"
+aws ecs register-task-definition --cli-input-json file://.aws/task-definition.json
+  aws iam get-role-policy     --role-name ecsTaskExecutionRole     --policy-name DendoSecretsAccess
