@@ -15,3 +15,15 @@ Before the pipeline will work end-to-end, you'll need to:
   1. Create the Secrets Manager secret with your DB connection string, JWT config, and demo user credentials
   2. Update the ARNs in .aws/task-definition.json (ACCOUNT_ID, YOUR_SECRET_NAME)
   3. Ensure the ECS task execution role has secretsmanager:GetSecretValue permission
+
+
+  1. Create the role with the ECS trust policy:
+  aws iam create-role --role-name ecsTaskExecutionRole --assume-role-policy-document "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+
+
+  2. Attach the AWS managed policy (covers ECR pull + CloudWatch logs):
+  aws iam attach-role-policy --role-name ecsTaskExecutionRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+
+  3. Add the Secrets Manager inline policy:
+  aws iam put-role-policy --role-name ecsTaskExecutionRole --policy-name DendoSecretsAccess --policy-document "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"arn:aws:secretsmanager:eu-north-1:654862558684:secret:DENDO_SECRET*\"}]}"
