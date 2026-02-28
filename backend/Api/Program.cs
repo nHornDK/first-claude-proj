@@ -73,7 +73,10 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
-    scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>().Database;
+    if (db.IsRelational()) db.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
