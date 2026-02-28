@@ -23,7 +23,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     ports:
-      - "80:8080"
+      - "80:80"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=FirstClaudeDb;Username=postgres;Password=postgres"

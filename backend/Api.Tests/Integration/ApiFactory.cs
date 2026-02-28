@@ -23,7 +23,7 @@ public class ApiFactory : WebApplicationFactory<Program>
                 ["DemoUser:Password"] = "password123"
             });
         });
-
+builder.UseUrls("http://localhost:80","http://localhost:8080", "https://api.dendo.dk")
         builder.ConfigureServices(services =>
         {
             // Remove all EF Core registrations for AppDbContext
