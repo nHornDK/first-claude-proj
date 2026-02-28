@@ -1,10 +1,16 @@
 import { useEffect, useState } from 'react';
-import { fetchItems, createItem, deleteItem } from './api';
+import { fetchItems, createItem, updateItem, deleteItem } from './api';
 import type { Item } from './types';
 
 interface Props {
   token: string;
   onLogout: () => void;
+}
+
+interface EditState {
+  id: number;
+  name: string;
+  description: string;
 }
 
 export default function ItemsPage({ token, onLogout }: Props) {
@@ -13,6 +19,8 @@ export default function ItemsPage({ token, onLogout }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [editing, setEditing] = useState<EditState | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchItems(token)
@@ -33,6 +41,29 @@ export default function ItemsPage({ token, onLogout }: Props) {
       setError('Failed to create item.');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  function startEdit(item: Item) {
+    setEditing({ id: item.id, name: item.name, description: item.description ?? '' });
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editing) return;
+    setSaving(true);
+    try {
+      await updateItem(token, editing.id, editing.name.trim(), editing.description.trim());
+      setItems((prev) =>
+        prev.map((i) =>
+          i.id === editing.id ? { ...i, name: editing.name.trim(), description: editing.description.trim() } : i
+        )
+      );
+      setEditing(null);
+    } catch {
+      setError('Failed to save item.');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -87,19 +118,53 @@ export default function ItemsPage({ token, onLogout }: Props) {
             </tr>
           </thead>
           <tbody>
-            {items.map((item) => (
-              <tr key={item.id} style={styles.tr}>
-                <td style={styles.td}>{item.id}</td>
-                <td style={styles.td}>{item.name}</td>
-                <td style={styles.td}>{item.description ?? '—'}</td>
-                <td style={styles.td}>{new Date(item.createdAt).toLocaleDateString()}</td>
-                <td style={styles.td}>
-                  <button onClick={() => handleDelete(item.id)} style={styles.deleteBtn}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {items.map((item) =>
+              editing?.id === item.id ? (
+                <tr key={item.id} style={styles.tr}>
+                  <td style={styles.td}>{item.id}</td>
+                  <td style={styles.td}>
+                    <input
+                      value={editing.name}
+                      onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                      style={styles.inlineInput}
+                      autoFocus
+                      required
+                    />
+                  </td>
+                  <td style={styles.td}>
+                    <input
+                      value={editing.description}
+                      onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                      style={styles.inlineInput}
+                    />
+                  </td>
+                  <td style={styles.td}>{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td style={styles.td}>
+                    <span style={styles.actions}>
+                      <button onClick={handleSave} disabled={saving} style={styles.saveBtn}>
+                        {saving ? '...' : 'Save'}
+                      </button>
+                      <button onClick={() => setEditing(null)} style={styles.cancelBtn}>
+                        Cancel
+                      </button>
+                    </span>
+                  </td>
+                </tr>
+              ) : (
+                <tr key={item.id} style={styles.tr}>
+                  <td style={styles.td}>{item.id}</td>
+                  <td style={styles.td}>{item.name}</td>
+                  <td style={styles.td}>{item.description ?? '—'}</td>
+                  <td style={styles.td}>{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td style={styles.td}>
+                    <span style={styles.actions}>
+                      <button onClick={() => startEdit(item)} style={styles.editBtn}>Edit</button>
+                      <button onClick={() => handleDelete(item.id)} style={styles.deleteBtn}>Delete</button>
+                    </span>
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       )}
@@ -115,11 +180,16 @@ const styles: Record<string, React.CSSProperties> = {
   error: { color: '#f87171', marginBottom: '1rem' },
   form: { display: 'flex', gap: '0.75rem', marginBottom: '2rem', flexWrap: 'wrap' },
   input: { flex: 1, minWidth: 160, padding: '0.5rem 0.75rem', borderRadius: 6, border: '1px solid #444', background: '#1a1a1a', color: 'inherit', fontSize: '0.95rem' },
+  inlineInput: { width: '100%', padding: '0.3rem 0.5rem', borderRadius: 5, border: '1px solid #555', background: '#1a1a1a', color: 'inherit', fontSize: '0.95rem', boxSizing: 'border-box' },
   addBtn: { padding: '0.5rem 1.25rem', borderRadius: 6, background: '#646cff', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.95rem' },
   empty: { color: '#888', textAlign: 'center', marginTop: '3rem' },
   table: { width: '100%', borderCollapse: 'collapse' },
   th: { textAlign: 'left', padding: '0.6rem 0.75rem', borderBottom: '1px solid #333', color: '#888', fontWeight: 600, fontSize: '0.85rem' },
   tr: { borderBottom: '1px solid #2a2a2a' },
   td: { padding: '0.7rem 0.75rem', fontSize: '0.95rem' },
+  actions: { display: 'flex', gap: '0.4rem' },
+  editBtn: { background: 'transparent', border: '1px solid #555', color: '#a5b4fc', cursor: 'pointer', padding: '0.3rem 0.7rem', borderRadius: 5, fontSize: '0.85rem' },
+  saveBtn: { background: '#646cff', border: 'none', color: '#fff', cursor: 'pointer', padding: '0.3rem 0.7rem', borderRadius: 5, fontSize: '0.85rem' },
+  cancelBtn: { background: 'transparent', border: '1px solid #555', color: '#888', cursor: 'pointer', padding: '0.3rem 0.7rem', borderRadius: 5, fontSize: '0.85rem' },
   deleteBtn: { background: 'transparent', border: '1px solid #666', color: '#f87171', cursor: 'pointer', padding: '0.3rem 0.7rem', borderRadius: 5, fontSize: '0.85rem' },
 };

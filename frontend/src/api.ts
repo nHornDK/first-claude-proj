@@ -35,6 +35,15 @@ export async function createItem(token: string, name: string, description: strin
   return res.json();
 }
 
+export async function updateItem(token: string, id: number, name: string, description: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}/items/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+    body: JSON.stringify({ id, name, description }),
+  });
+  if (!res.ok) throw new Error('Failed to update item');
+}
+
 export async function deleteItem(token: string, id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/items/${id}`, {
     method: 'DELETE',
