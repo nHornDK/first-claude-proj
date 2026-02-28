@@ -77,7 +77,10 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>().Database;
     if (db.IsRelational()) db.Migrate();
 }
-app.UseUrls("http://*:80")
+
+app.Urls.Add("http://*:80");
+app.Urls.Add("http://*:8080");
+app.Urls.Add("https://*:443");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
