@@ -1,0 +1,9 @@
+aws ecr create-repository --repository-name nhorn-ecr-repo --region eu-north-1
+https://eu-north-1.console.aws.amazon.com/ecs/home?region=eu-north-1#/firstRun
+
+
+#    Replace the value of the `ECS_SERVICE` environment variable in the workflow below with the name you set for the Amazon ECS service.
+#    Replace the value of the `ECS_CLUSTER` environment variable in the workflow below with the name you set for the cluster.
+
+
+claude --resume 055bb550-6017-483a-b3e2-65d6d965fde9
