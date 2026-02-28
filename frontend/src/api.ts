@@ -1,6 +1,6 @@
 import type { Item } from './types';
 
-const BASE_URL = 'http://localhost:5136/api';
+const BASE_URL = 'http://localhost:8080/api';
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
