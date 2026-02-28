@@ -23,7 +23,7 @@ jobs:
           dotnet-version: "9.x"
 
       - name: Restore
-        run: dotnet restore Api/Api.csproj && dotnet restore Api.Tests/Api.Tests.csproj
+        run: dotnet restore
 
       - name: Build
         run: dotnet build --no-restore --configuration Release
