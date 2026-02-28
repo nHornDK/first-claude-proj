@@ -79,8 +79,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Urls.Add("http://*:80");
-app.Urls.Add("http://*:8080");
-app.Urls.Add("https://*:443");
+// app.Urls.Add("http://*:8080");
+// app.Urls.Add("https://*:443");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
