@@ -34,7 +34,10 @@ public class ItemsController(AppDbContext db) : ControllerBase
     public async Task<IActionResult> Update(int id, Item item)
     {
         if (id != item.Id) return BadRequest();
-        db.Entry(item).State = EntityState.Modified;
+        var existing = await db.Items.FindAsync(id);
+        if (existing is null) return NotFound();
+        existing.Name = item.Name;
+        existing.Description = item.Description;
         await db.SaveChangesAsync();
         return NoContent();
     }

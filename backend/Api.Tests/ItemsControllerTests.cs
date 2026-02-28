@@ -90,5 +90,60 @@ public class ItemsControllerTests : IDisposable
         Assert.IsType<NotFoundResult>(result);
     }
 
+    [Fact]
+    public async Task Update_ValidItem_ReturnsNoContent()
+    {
+        var created = (CreatedAtActionResult)(await _sut.Create(new Item { Name = "Original" })).Result!;
+        var id = ((Item)created.Value!).Id;
+
+        var result = await _sut.Update(id, new Item { Id = id, Name = "Updated", Description = "New desc" });
+
+        Assert.IsType<NoContentResult>(result);
+    }
+
+    [Fact]
+    public async Task Update_PersistsChanges()
+    {
+        var created = (CreatedAtActionResult)(await _sut.Create(new Item { Name = "Original" })).Result!;
+        var id = ((Item)created.Value!).Id;
+
+        await _sut.Update(id, new Item { Id = id, Name = "Updated", Description = "New desc" });
+
+        _db.ChangeTracker.Clear();
+        var updated = await _db.Items.FindAsync(id);
+        Assert.Equal("Updated", updated!.Name);
+        Assert.Equal("New desc", updated.Description);
+    }
+
+    [Fact]
+    public async Task Update_DoesNotChangeCreatedAt()
+    {
+        var created = (CreatedAtActionResult)(await _sut.Create(new Item { Name = "Original" })).Result!;
+        var item = (Item)created.Value!;
+        var originalCreatedAt = item.CreatedAt;
+
+        await _sut.Update(item.Id, new Item { Id = item.Id, Name = "Updated", CreatedAt = DateTime.UtcNow.AddYears(1) });
+
+        _db.ChangeTracker.Clear();
+        var updated = await _db.Items.FindAsync(item.Id);
+        Assert.Equal(originalCreatedAt, updated!.CreatedAt);
+    }
+
+    [Fact]
+    public async Task Update_NonExistentId_ReturnsNotFound()
+    {
+        var result = await _sut.Update(999, new Item { Id = 999, Name = "X" });
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task Update_MismatchedId_ReturnsBadRequest()
+    {
+        var result = await _sut.Update(1, new Item { Id = 99, Name = "X" });
+
+        Assert.IsType<BadRequestResult>(result);
+    }
+
     public void Dispose() => _db.Dispose();
 }
