@@ -13,18 +13,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        if (builder.Environment.IsDevelopment())
-            policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        else
-            policy.WithOrigins(builder.Configuration["AllowedOrigins"] ?? "")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-    });
+{ options.AddDefaultPolicy(policy =>
+                   {  
+                    // .WithOrigins("http://localhost:8080","https://dendo.dk","http://localhost:8080")
+                     policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                   });
+    // options.AddDefaultPolicy(policy =>
+    // {
+    //     if (builder.Environment.IsDevelopment())
+    //         policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+    //               .AllowAnyHeader()
+    //               .AllowAnyMethod();
+    //     else
+    //         policy.WithOrigins(builder.Configuration["AllowedOrigins"] ?? "")
+    //               .AllowAnyHeader()
+    //               .AllowAnyMethod();
+    // });
 });
 
 builder.Services.AddScoped<TokenService>();
