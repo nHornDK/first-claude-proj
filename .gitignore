@@ -18,8 +18,8 @@ frontend/dist/
 .claude/
 
 # Environment files (contain secrets)
-.env.development
-.env.production
+# .env.development
+# .env.production
 
 # OS
 .DS_Store
