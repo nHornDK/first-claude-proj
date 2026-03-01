@@ -77,8 +77,9 @@ using (var scope = app.Services.CreateScope())
     var users = scope.ServiceProvider.GetRequiredService<IUserRepository>();
     if (!await users.AnyAsync())
     {
-        var admin = new UserEntity { Username = "admin" };
-        UserRepository.SetPassword(admin, "pokersjov1!");
+        var demoUser = app.Configuration.GetSection("DemoUser");
+        var admin = new UserEntity { Username = demoUser["Username"] ?? "admin" };
+        UserRepository.SetPassword(admin, demoUser["Password"]!);
         await users.CreateAsync(admin);
     }
 }

@@ -1,6 +1,6 @@
 import type { Item, User } from './types';
 
-const BASE_URL = 'https://api.dendo.dk/api';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
