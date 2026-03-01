@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import LoginPage from './LoginPage';
-import ItemsPage from './ItemsPage';
-import ProfilePage from './ProfilePage';
+import LoginPage from './pages/LoginPage';
+import ItemsPage from './pages/ItemsPage';
+import ProfilePage from './pages/ProfilePage';
 
 type View = 'items' | 'profile';
 

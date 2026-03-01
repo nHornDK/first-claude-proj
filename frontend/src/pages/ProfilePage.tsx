@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getMe, updateMe, changePassword } from './api';
-import type { User } from './types';
+import { getMe, updateMe, changePassword } from '../api';
+import type { User } from '../types';
 
 interface Props {
   token: string;
@@ -77,12 +77,13 @@ export default function ProfilePage({ token, onBack }: Props) {
         <h2 style={styles.sectionTitle}>Account details</h2>
         <form onSubmit={handleProfileSave} style={styles.form}>
           <div style={styles.field}>
-            <label style={styles.label}>Username</label>
-            <input value={user.username} disabled style={{ ...styles.input, opacity: 0.5 }} />
+            <label htmlFor="username" style={styles.label}>Username</label>
+            <input id="username" value={user.username} disabled style={{ ...styles.input, opacity: 0.5 }} />
           </div>
           <div style={styles.field}>
-            <label style={styles.label}>Display name</label>
+            <label htmlFor="displayName" style={styles.label}>Display name</label>
             <input
+              id="displayName"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
@@ -90,8 +91,9 @@ export default function ProfilePage({ token, onBack }: Props) {
             />
           </div>
           <div style={styles.field}>
-            <label style={styles.label}>Email</label>
+            <label htmlFor="email" style={styles.label}>Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -110,8 +112,9 @@ export default function ProfilePage({ token, onBack }: Props) {
         <h2 style={styles.sectionTitle}>Change password</h2>
         <form onSubmit={handlePasswordChange} style={styles.form}>
           <div style={styles.field}>
-            <label style={styles.label}>Current password</label>
+            <label htmlFor="currentPassword" style={styles.label}>Current password</label>
             <input
+              id="currentPassword"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
@@ -121,8 +124,9 @@ export default function ProfilePage({ token, onBack }: Props) {
             />
           </div>
           <div style={styles.field}>
-            <label style={styles.label}>New password</label>
+            <label htmlFor="newPassword" style={styles.label}>New password</label>
             <input
+              id="newPassword"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -132,8 +136,9 @@ export default function ProfilePage({ token, onBack }: Props) {
             />
           </div>
           <div style={styles.field}>
-            <label style={styles.label}>Confirm new password</label>
+            <label htmlFor="confirmPassword" style={styles.label}>Confirm new password</label>
             <input
+              id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

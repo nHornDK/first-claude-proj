@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { login } from './api';
+import { login } from '../api';
 
 interface Props {
   onLogin: (token: string) => void;
@@ -32,8 +32,9 @@ export default function LoginPage({ onLogin }: Props) {
 
         {error && <p style={styles.error}>{error}</p>}
 
-        <label style={styles.label}>Username</label>
+        <label htmlFor="username" style={styles.label}>Username</label>
         <input
+          id="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           style={styles.input}
@@ -41,8 +42,9 @@ export default function LoginPage({ onLogin }: Props) {
           required
         />
 
-        <label style={styles.label}>Password</label>
+        <label htmlFor="password" style={styles.label}>Password</label>
         <input
+          id="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

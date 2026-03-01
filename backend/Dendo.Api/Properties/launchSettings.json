@@ -3,10 +3,11 @@
     "http": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "HTTP_PORTS": "8080"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5136"
+      "applicationUrl": "http://localhost:80            "
     },
     "https": {
       "commandName": "Project",

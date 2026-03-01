@@ -7,6 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="..\..\.env" Link=".env">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
+    <Page Include="..\..\.env.development" Link=".env.development">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
+    <Page Include="..\..\.env.production" Link=".env.production">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchItems, createItem, updateItem, deleteItem } from './api';
-import type { Item } from './types';
+import { fetchItems, createItem, updateItem, deleteItem } from '../api';
+import type { Item } from '../types';
 
 interface Props {
   token: string;
