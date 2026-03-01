@@ -80,7 +80,7 @@ using (var scope = app.Services.CreateScope())
     if (db.IsRelational()) db.Migrate();
 }
 
-app.Urls.Add("http://*:80");
+app.Urls.Add("http://localhost:80");
 // app.Urls.Add("http://*:8080");
 // app.Urls.Add("https://*:443");
 if (app.Environment.IsDevelopment())
