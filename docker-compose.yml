@@ -1,10 +1,11 @@
+name: dendo
+
 services:
   postgres:
     image: postgres:17
-    environment:
-      POSTGRES_DB: FirstClaudeDb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env
+      - .env.development
     ports:
       - "5432:5432"
     volumes:
@@ -25,15 +26,9 @@ services:
     ports:
       - "80:80"
       # - "443:443"
-    environment:
-      HTTP_PORTS: 80
-      # HTTPS_PORTS: 443
-      # ASPNETCORE_HTTP_PORTS=3000;5005
-      # ASPNETCORE_HTTPS_PORTS=5000
-      # ASPNETCORE_URLS: "http://*:8080;http://*:80;https://*:443"
-
-      ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=FirstClaudeDb;Username=postgres;Password=postgres"
+    env_file:
+      - .env
+      - .env.development
     depends_on:
       postgres:
         condition: service_healthy

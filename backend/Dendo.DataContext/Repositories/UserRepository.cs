@@ -16,6 +16,12 @@ public class UserRepository(AppDbContext db) : IUserRepository
         await db.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(UserEntity user)
+    {
+        db.Users.Update(user);
+        await db.SaveChangesAsync();
+    }
+
     public Task<bool> AnyAsync() => db.Users.AnyAsync();
 
     public static void SetPassword(UserEntity user, string password)

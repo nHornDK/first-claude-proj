@@ -4,3 +4,10 @@ export interface Item {
   description: string | null;
   createdAt: string;
 }
+
+export interface User {
+  id: number;
+  username: string;
+  email: string | null;
+  displayName: string | null;
+}

@@ -17,6 +17,10 @@ frontend/dist/
 # Claude Code
 .claude/
 
+# Environment files (contain secrets)
+.env.development
+.env.production
+
 # OS
 .DS_Store
 Thumbs.db

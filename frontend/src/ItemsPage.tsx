@@ -5,6 +5,7 @@ import type { Item } from './types';
 interface Props {
   token: string;
   onLogout: () => void;
+  onProfile: () => void;
 }
 
 interface EditState {
@@ -13,7 +14,7 @@ interface EditState {
   description: string;
 }
 
-export default function ItemsPage({ token, onLogout }: Props) {
+export default function ItemsPage({ token, onLogout, onProfile }: Props) {
   const [items, setItems] = useState<Item[]>([]);
   const [error, setError] = useState('');
   const [name, setName] = useState('');
@@ -80,7 +81,10 @@ export default function ItemsPage({ token, onLogout }: Props) {
     <div style={styles.page}>
       <header style={styles.header}>
         <h1 style={styles.title}>Items</h1>
-        <button onClick={onLogout} style={styles.logoutBtn}>Logout</button>
+        <span style={{ display: 'flex', gap: '0.5rem' }}>
+          <button onClick={onProfile} style={styles.logoutBtn}>Profile</button>
+          <button onClick={onLogout} style={styles.logoutBtn}>Logout</button>
+        </span>
       </header>
 
       {error && <p style={styles.error}>{error}</p>}
