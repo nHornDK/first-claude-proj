@@ -84,7 +84,7 @@ using (var scope = app.Services.CreateScope())
     if (db.IsRelational()) db.Migrate();
 }
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || true)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
