@@ -1,6 +1,6 @@
 import type { Item } from './types';
 
-const BASE_URL = 'http://api.dendo.dk/api';
+const BASE_URL = 'https://api.dendo.dk/api';
 
 function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
