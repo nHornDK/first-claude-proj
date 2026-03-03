@@ -26,8 +26,10 @@ services:
       context: backend
       dockerfile: Dockerfile
     ports:
-      - "${HTTP_PORTS}:80"
+      - "80:80"
       # - "443:443"
+    environment:
+      ASPNETCORE_URLS: "http://+:80"
     env_file:
       - .env
       - .env.development
