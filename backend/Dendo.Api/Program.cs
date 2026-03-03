@@ -9,26 +9,17 @@ using Dendo.DataContext.Repositories;
 using Dendo.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration.SetBasePath(Directory.GetCurrentDirectory()).AddEnvironmentVariables().Build();
-var con = config.GetValue<string>("DefaultConnection");
-var ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(ConnectionString)
- );
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
 {
-    // options.AddDefaultPolicy(policy =>
-    //            {
-    //                policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().WithOrigins("https://dendo.dk", "http://localhost:5173");
-    //            });
-
-
-
-        options.AddDefaultPolicy(policy =>
+    options.AddDefaultPolicy(policy =>
     {
         if (builder.Environment.IsDevelopment())
+            // Allow any localhost origin (any port) for local development
             policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
@@ -102,13 +93,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment() || true)
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().Build());
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health");
