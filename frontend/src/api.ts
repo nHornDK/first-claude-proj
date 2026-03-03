@@ -17,6 +17,20 @@ export async function login(username: string, password: string): Promise<string>
   return token;
 }
 
+export async function signup(username: string, password: string): Promise<string> {
+  const res = await fetch(`${BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? 'Registration failed.');
+  }
+  const { token } = await res.json();
+  return token;
+}
+
 export async function getMe(token: string): Promise<User> {
   const res = await fetch(`${BASE_URL}/user/me`, { headers: authHeaders(token) });
   if (!res.ok) throw new Error('Failed to fetch profile');

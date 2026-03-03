@@ -1,26 +1,31 @@
 import { useState } from 'react';
-import { login } from '../api';
+import { signup } from '../api';
 
 interface Props {
-  onLogin: (token: string) => void;
-  onSignupClick: () => void;
+  onSignup: (token: string) => void;
+  onLoginClick: () => void;
 }
 
-export default function LoginPage({ onLogin, onSignupClick }: Props) {
+export default function SignupPage({ onSignup, onLoginClick }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
-      const token = await login(username, password);
-      onLogin(token);
-    } catch {
-      setError('Invalid username or password.');
+      const token = await signup(username, password);
+      onSignup(token);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed.');
     } finally {
       setLoading(false);
     }
@@ -29,7 +34,7 @@ export default function LoginPage({ onLogin, onSignupClick }: Props) {
   return (
     <div style={styles.wrapper}>
       <form onSubmit={handleSubmit} style={styles.form}>
-        <h1 style={styles.title}>Sign in</h1>
+        <h1 style={styles.title}>Create account</h1>
 
         {error && <p style={styles.error}>{error}</p>}
 
@@ -50,18 +55,29 @@ export default function LoginPage({ onLogin, onSignupClick }: Props) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
-          autoComplete="current-password"
+          autoComplete="new-password"
+          required
+        />
+
+        <label htmlFor="confirmPassword" style={styles.label}>Confirm password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          style={styles.input}
+          autoComplete="new-password"
           required
         />
 
         <button type="submit" disabled={loading} style={styles.btn}>
-          {loading ? 'Signing in...' : 'Sign in'}
+          {loading ? 'Creating account...' : 'Create account'}
         </button>
 
         <p style={styles.link}>
-          Don&apos;t have an account?{' '}
-          <button type="button" onClick={onSignupClick} style={styles.linkBtn}>
-            Create one
+          Already have an account?{' '}
+          <button type="button" onClick={onLoginClick} style={styles.linkBtn}>
+            Sign in
           </button>
         </p>
       </form>

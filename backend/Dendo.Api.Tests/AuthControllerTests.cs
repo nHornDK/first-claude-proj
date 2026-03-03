@@ -61,4 +61,44 @@ public class AuthControllerTests
 
         Assert.IsType<UnauthorizedResult>(result.Result);
     }
+
+    [Fact]
+    public async Task Register_NewUser_ReturnsOkWithToken()
+    {
+        _userRepo.Setup(r => r.FindByUsernameAsync("newuser")).ReturnsAsync((UserEntity?)null);
+        _userRepo.Setup(r => r.CreateAsync(It.IsAny<UserEntity>())).Returns(Task.CompletedTask);
+
+        var result = await _sut.Register(new RegisterRequest("newuser", "password123"));
+
+        var ok = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.NotNull(ok.Value);
+    }
+
+    [Fact]
+    public async Task Register_ExistingUsername_ReturnsConflict()
+    {
+        var existing = new UserEntity { Username = "admin" };
+        UserRepository.SetPassword(existing, "password123");
+        _userRepo.Setup(r => r.FindByUsernameAsync("admin")).ReturnsAsync(existing);
+
+        var result = await _sut.Register(new RegisterRequest("admin", "newpassword"));
+
+        Assert.IsType<ConflictObjectResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task Register_EmptyUsername_ReturnsBadRequest()
+    {
+        var result = await _sut.Register(new RegisterRequest("", "password123"));
+
+        Assert.IsType<BadRequestObjectResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task Register_EmptyPassword_ReturnsBadRequest()
+    {
+        var result = await _sut.Register(new RegisterRequest("newuser", ""));
+
+        Assert.IsType<BadRequestObjectResult>(result.Result);
+    }
 }

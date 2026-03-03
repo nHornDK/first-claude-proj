@@ -8,13 +8,14 @@ vi.mock('../api');
 
 describe('LoginPage', () => {
   const onLogin = vi.fn();
+  const onSignupClick = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders the sign-in form', () => {
-    render(<LoginPage onLogin={onLogin} />);
+    render(<LoginPage onLogin={onLogin} onSignupClick={onSignupClick} />);
     expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
@@ -23,7 +24,7 @@ describe('LoginPage', () => {
 
   it('calls login and invokes onLogin with token on success', async () => {
     vi.mocked(api.login).mockResolvedValue('test-token');
-    render(<LoginPage onLogin={onLogin} />);
+    render(<LoginPage onLogin={onLogin} onSignupClick={onSignupClick} />);
 
     await userEvent.type(screen.getByLabelText(/username/i), 'admin');
     await userEvent.type(screen.getByLabelText(/password/i), 'secret');
@@ -35,7 +36,7 @@ describe('LoginPage', () => {
 
   it('shows an error message when login fails', async () => {
     vi.mocked(api.login).mockRejectedValue(new Error('Unauthorized'));
-    render(<LoginPage onLogin={onLogin} />);
+    render(<LoginPage onLogin={onLogin} onSignupClick={onSignupClick} />);
 
     await userEvent.type(screen.getByLabelText(/username/i), 'admin');
     await userEvent.type(screen.getByLabelText(/password/i), 'wrong');
@@ -48,13 +49,19 @@ describe('LoginPage', () => {
   });
 
   it('disables the button while submitting', async () => {
-    vi.mocked(api.login).mockImplementation(() => new Promise(() => {})); // never resolves
-    render(<LoginPage onLogin={onLogin} />);
+    vi.mocked(api.login).mockImplementation(() => new Promise(() => {}));
+    render(<LoginPage onLogin={onLogin} onSignupClick={onSignupClick} />);
 
     await userEvent.type(screen.getByLabelText(/username/i), 'admin');
     await userEvent.type(screen.getByLabelText(/password/i), 'pass');
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     expect(screen.getByRole('button', { name: /signing in/i })).toBeDisabled();
+  });
+
+  it('calls onSignupClick when the create account link is clicked', async () => {
+    render(<LoginPage onLogin={onLogin} onSignupClick={onSignupClick} />);
+    await userEvent.click(screen.getByRole('button', { name: /create one/i }));
+    expect(onSignupClick).toHaveBeenCalled();
   });
 });

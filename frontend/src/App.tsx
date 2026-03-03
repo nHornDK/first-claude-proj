@@ -1,27 +1,33 @@
 import { useState } from 'react';
 import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import ItemsPage from './pages/ItemsPage';
 import ProfilePage from './pages/ProfilePage';
 
-type View = 'items' | 'profile';
+type AuthView = 'login' | 'signup';
+type AppView = 'items' | 'profile';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(null);
-  const [view, setView] = useState<View>('items');
+  const [authView, setAuthView] = useState<AuthView>('login');
+  const [appView, setAppView] = useState<AppView>('items');
 
   if (!token) {
-    return <LoginPage onLogin={setToken} />;
+    if (authView === 'signup') {
+      return <SignupPage onSignup={setToken} onLoginClick={() => setAuthView('login')} />;
+    }
+    return <LoginPage onLogin={setToken} onSignupClick={() => setAuthView('signup')} />;
   }
 
-  if (view === 'profile') {
-    return <ProfilePage token={token} onBack={() => setView('items')} />;
+  if (appView === 'profile') {
+    return <ProfilePage token={token} onBack={() => setAppView('items')} />;
   }
 
   return (
     <ItemsPage
       token={token}
-      onLogout={() => { setToken(null); setView('items'); }}
-      onProfile={() => setView('profile')}
+      onLogout={() => { setToken(null); setAuthView('login'); }}
+      onProfile={() => setAppView('profile')}
     />
   );
 }
