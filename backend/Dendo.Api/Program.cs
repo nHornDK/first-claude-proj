@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         else
-            policy.WithOrigins(builder.Configuration["AllowedOrigins"] ?? "")
+            policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "dendo.dk")//.WithOrigins(builder.Configuration["AllowedOrigins"] ?? "")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
     });
@@ -101,6 +101,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
