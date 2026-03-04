@@ -9,8 +9,6 @@ COPY Dendo.DataContext/ Dendo.DataContext/
 COPY Dendo.Api/ Dendo.Api/
 RUN dotnet publish Dendo.Api/Dendo.Api.csproj -c Release -o /app/publish --no-restore
 
-
-
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 EXPOSE 80
