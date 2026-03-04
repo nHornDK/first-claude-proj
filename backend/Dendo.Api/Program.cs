@@ -85,7 +85,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (db.Database.IsRelational() && False) db.Database.Migrate();
+    if (db.Database.IsRelational() && false) db.Database.Migrate();
 
     var users = scope.ServiceProvider.GetRequiredService<IUserRepository>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
