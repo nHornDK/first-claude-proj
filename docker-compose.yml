@@ -20,6 +20,7 @@ services:
     networks:
       - backend
 
+
   api:
     image: ${API_IMAGE:-first-claude-proj-api:latest}
     build:
