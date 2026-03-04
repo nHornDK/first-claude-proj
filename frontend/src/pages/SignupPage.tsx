@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { signup } from '../api';
+import { Box, Paper, Typography, TextField, Button, Alert, Link } from '@mui/material';
 
 interface Props {
   onSignup: (token: string) => void;
@@ -32,67 +33,69 @@ export default function SignupPage({ onSignup, onLoginClick }: Props) {
   }
 
   return (
-    <div style={styles.wrapper}>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <h1 style={styles.title}>Create account</h1>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        p: 2,
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{ width: '100%', maxWidth: 400, p: 4, borderRadius: 3 }}
+        component="form"
+        onSubmit={handleSubmit}
+      >
+        <Typography variant="h5" align="center" fontWeight={700} mb={3}>
+          Create account
+        </Typography>
 
-        {error && <p style={styles.error}>{error}</p>}
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        <label htmlFor="username" style={styles.label}>Username</label>
-        <input
-          id="username"
+        <TextField
+          label="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={styles.input}
-          autoComplete="username"
+          fullWidth
           required
+          autoComplete="username"
+          sx={{ mb: 2 }}
         />
-
-        <label htmlFor="password" style={styles.label}>Password</label>
-        <input
-          id="password"
+        <TextField
+          label="Password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-          autoComplete="new-password"
+          fullWidth
           required
+          autoComplete="new-password"
+          sx={{ mb: 2 }}
         />
-
-        <label htmlFor="confirmPassword" style={styles.label}>Confirm password</label>
-        <input
-          id="confirmPassword"
+        <TextField
+          label="Confirm password"
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          style={styles.input}
-          autoComplete="new-password"
+          fullWidth
           required
+          autoComplete="new-password"
+          sx={{ mb: 3 }}
         />
 
-        <button type="submit" disabled={loading} style={styles.btn}>
+        <Button type="submit" variant="contained" fullWidth disabled={loading} size="large">
           {loading ? 'Creating account...' : 'Create account'}
-        </button>
+        </Button>
 
-        <p style={styles.link}>
+        <Typography align="center" variant="body2" mt={2} color="text.secondary">
           Already have an account?{' '}
-          <button type="button" onClick={onLoginClick} style={styles.linkBtn}>
+          <Link component="button" type="button" onClick={onLoginClick} underline="hover">
             Sign in
-          </button>
-        </p>
-      </form>
-    </div>
+          </Link>
+        </Typography>
+      </Paper>
+    </Box>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  wrapper: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '1rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%', maxWidth: 360, padding: '2rem', border: '1px solid #333', borderRadius: 10, background: '#1a1a1a' },
-  title: { margin: '0 0 0.5rem', fontSize: '1.5rem', textAlign: 'center' },
-  error: { color: '#f87171', margin: 0, fontSize: '0.9rem', textAlign: 'center' },
-  label: { fontSize: '0.85rem', color: '#aaa' },
-  input: { padding: '0.55rem 0.75rem', borderRadius: 6, border: '1px solid #444', background: '#242424', color: 'inherit', fontSize: '1rem' },
-  btn: { marginTop: '0.5rem', padding: '0.6rem', borderRadius: 6, background: '#646cff', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 600 },
-  link: { margin: '0.25rem 0 0', textAlign: 'center', fontSize: '0.875rem', color: '#888' },
-  linkBtn: { background: 'none', border: 'none', color: '#646cff', cursor: 'pointer', fontSize: 'inherit', padding: 0, textDecoration: 'underline' },
-};

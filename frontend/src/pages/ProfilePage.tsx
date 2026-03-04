@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react';
 import { getMe, updateMe, changePassword } from '../api';
 import type { User } from '../types';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+} from '@mui/material';
 
 interface Props {
   token: string;
-  onBack: () => void;
 }
 
-export default function ProfilePage({ token, onBack }: Props) {
+export default function ProfilePage({ token }: Props) {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -64,110 +72,88 @@ export default function ProfilePage({ token, onBack }: Props) {
     }
   }
 
-  if (!user) return <div style={styles.page}><p style={{ color: '#888' }}>Loading...</p></div>;
+  if (!user) {
+    return (
+      <Box>
+        <Typography color="text.secondary">Loading...</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <button onClick={onBack} style={styles.backBtn}>← Back</button>
-        <h1 style={styles.title}>Profile</h1>
-      </header>
+    <Box maxWidth={560}>
+      <Typography variant="h5" fontWeight={700} mb={3}>Profile</Typography>
 
-      <section style={styles.card}>
-        <h2 style={styles.sectionTitle}>Account details</h2>
-        <form onSubmit={handleProfileSave} style={styles.form}>
-          <div style={styles.field}>
-            <label htmlFor="username" style={styles.label}>Username</label>
-            <input id="username" value={user.username} disabled style={{ ...styles.input, opacity: 0.5 }} />
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="displayName" style={styles.label}>Display name</label>
-            <input
-              id="displayName"
+      <Card variant="outlined" sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="subtitle1" fontWeight={600} mb={2}>Account details</Typography>
+          <Box component="form" onSubmit={handleProfileSave} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField label="Username" value={user.username} disabled fullWidth />
+            <TextField
+              label="Display name"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
-              style={styles.input}
+              fullWidth
             />
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="email" style={styles.label}>Email</label>
-            <input
-              id="email"
+            <TextField
+              label="Email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              style={styles.input}
+              fullWidth
             />
-          </div>
-          {profileMsg && <p style={{ ...styles.msg, color: profileMsg.ok ? '#4ade80' : '#f87171' }}>{profileMsg.text}</p>}
-          <button type="submit" disabled={savingProfile} style={styles.saveBtn}>
-            {savingProfile ? 'Saving...' : 'Save changes'}
-          </button>
-        </form>
-      </section>
+            {profileMsg && (
+              <Alert severity={profileMsg.ok ? 'success' : 'error'}>{profileMsg.text}</Alert>
+            )}
+            <Button type="submit" variant="contained" disabled={savingProfile} sx={{ alignSelf: 'flex-start' }}>
+              {savingProfile ? 'Saving...' : 'Save changes'}
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
-      <section style={styles.card}>
-        <h2 style={styles.sectionTitle}>Change password</h2>
-        <form onSubmit={handlePasswordChange} style={styles.form}>
-          <div style={styles.field}>
-            <label htmlFor="currentPassword" style={styles.label}>Current password</label>
-            <input
-              id="currentPassword"
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="subtitle1" fontWeight={600} mb={2}>Change password</Typography>
+          <Box component="form" onSubmit={handlePasswordChange} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="Current password"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              style={styles.input}
               required
               autoComplete="current-password"
+              fullWidth
             />
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="newPassword" style={styles.label}>New password</label>
-            <input
-              id="newPassword"
+            <TextField
+              label="New password"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              style={styles.input}
               required
               autoComplete="new-password"
+              fullWidth
             />
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="confirmPassword" style={styles.label}>Confirm new password</label>
-            <input
-              id="confirmPassword"
+            <TextField
+              label="Confirm new password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              style={styles.input}
               required
               autoComplete="new-password"
+              fullWidth
             />
-          </div>
-          {passwordMsg && <p style={{ ...styles.msg, color: passwordMsg.ok ? '#4ade80' : '#f87171' }}>{passwordMsg.text}</p>}
-          <button type="submit" disabled={savingPassword} style={styles.saveBtn}>
-            {savingPassword ? 'Changing...' : 'Change password'}
-          </button>
-        </form>
-      </section>
-    </div>
+            {passwordMsg && (
+              <Alert severity={passwordMsg.ok ? 'success' : 'error'}>{passwordMsg.text}</Alert>
+            )}
+            <Button type="submit" variant="contained" disabled={savingPassword} sx={{ alignSelf: 'flex-start' }}>
+              {savingPassword ? 'Changing...' : 'Change password'}
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  page: { maxWidth: 560, margin: '0 auto', padding: '2rem', fontFamily: 'inherit' },
-  header: { display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' },
-  backBtn: { background: 'transparent', border: '1px solid #555', color: 'inherit', cursor: 'pointer', padding: '0.4rem 0.8rem', borderRadius: 6, fontSize: '0.9rem' },
-  title: { margin: 0, fontSize: '1.8rem' },
-  card: { border: '1px solid #2a2a2a', borderRadius: 10, padding: '1.5rem', marginBottom: '1.5rem', background: '#1a1a1a' },
-  sectionTitle: { margin: '0 0 1.25rem', fontSize: '1.1rem', color: '#ccc' },
-  form: { display: 'flex', flexDirection: 'column', gap: '1rem' },
-  field: { display: 'flex', flexDirection: 'column', gap: '0.35rem' },
-  label: { fontSize: '0.85rem', color: '#aaa' },
-  input: { padding: '0.55rem 0.75rem', borderRadius: 6, border: '1px solid #444', background: '#242424', color: 'inherit', fontSize: '0.95rem' },
-  msg: { margin: 0, fontSize: '0.9rem' },
-  saveBtn: { alignSelf: 'flex-start', padding: '0.55rem 1.25rem', borderRadius: 6, background: '#646cff', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 },
-};

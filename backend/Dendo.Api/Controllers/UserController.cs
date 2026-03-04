@@ -15,6 +15,13 @@ public class UserController(IUserRepository users) : ControllerBase
 {
     private string CurrentUsername => User.Identity!.Name!;
 
+    [HttpGet]
+    public async Task<ActionResult<List<UserProfileResponse>>> GetUsers()
+    {
+        var all = await users.GetAllAsync();
+        return Ok(all.Select(u => new UserProfileResponse(u.Id, u.Username, u.Email, u.DisplayName)));
+    }
+
     [HttpGet("me")]
     public async Task<ActionResult<UserProfileResponse>> GetMe()
     {

@@ -10,6 +10,9 @@ public class UserRepository(AppDbContext db) : IUserRepository
     public Task<UserEntity?> FindByUsernameAsync(string username) =>
         db.Users.FirstOrDefaultAsync(u => u.Username == username);
 
+    public Task<List<UserEntity>> GetAllAsync() =>
+        db.Users.OrderBy(u => u.Id).ToListAsync();
+
     public async Task CreateAsync(UserEntity user)
     {
         db.Users.Add(user);
