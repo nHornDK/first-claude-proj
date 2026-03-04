@@ -89,11 +89,11 @@ using (var scope = app.Services.CreateScope())
 
     var users = scope.ServiceProvider.GetRequiredService<IUserRepository>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    db.Users.ToList().ForEach(u => {
-        logger.LogInformation($"Users:  {JsonSerializer.Serialize(u)}");
-        db.Users.Remove(u);
-        });
-    db.SaveChanges();
+    //db.Users.ToList().ForEach(u => {
+    //    logger.LogInformation($"Users:  {JsonSerializer.Serialize(u)}");
+    //    db.Users.Remove(u);
+    //    });
+    //db.SaveChanges();
     logger.LogInformation($"app.Configuration: {JsonSerializer.Serialize(app.Configuration.GetChildren())}");
     if (!await users.AnyAsync())
     {
