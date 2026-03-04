@@ -1,0 +1,46 @@
+# docker compose --env-file .env --env-file .env.production up -d
+# docker compose --env-file .env --env-file .env.development up -d
+name: dendo
+
+services:
+  postgres:
+    image: postgres:17
+    env_file:
+      - .env
+      - .env.production
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+  api:
+    image: ${API_IMAGE:-first-claude-proj-api:latest}
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      # - "443:443"
+    environment:
+      ASPNETCORE_URLS: "http://+:80"
+    env_file:
+      - .env
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  postgres_data:

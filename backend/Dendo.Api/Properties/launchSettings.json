@@ -4,7 +4,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "HTTP_PORTS": "8080"
+        "HTTP_PORTS": "80"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:80            "

@@ -9,7 +9,7 @@ name: Deploy to Amazon ECS
 on:
   push:
     branches: ["master"]
-    paths: ["backend/**", "docker-compose.yml"]
+    paths: ["backend/**", "docker-compose.yml", "docker-compose.prod.yml"]
 
 env:
   AWS_REGION: eu-north-1
@@ -68,8 +68,8 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         run: |
-          docker compose build api
-          docker compose push api
+          docker compose -f docker-compose.prod.yml build api
+          docker compose -f docker-compose.prod.yml push api
           echo "image=$API_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Fill in the new image ID in the Amazon ECS task definition
