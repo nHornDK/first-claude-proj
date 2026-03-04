@@ -16,7 +16,7 @@ public class ApiFactory : WebApplicationFactory<Program>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Jwt:Secret"] = "integration_test_secret_long_enough_32chars!!",
+                ["Jwt:Secret"] = "9f3c7a1e4b82d6f0a5c9e1378bd24f6a",
                 ["Jwt:Issuer"] = "test-issuer",
                 ["Jwt:Audience"] = "test-audience",
                 ["DemoUser:Username"] = "admin",

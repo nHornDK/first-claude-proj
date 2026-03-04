@@ -13,7 +13,7 @@ public class TokenServiceTests
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Jwt:Secret"] = "super_secret_test_key_that_is_long_enough_32chars",
+                ["Jwt:Secret"] = "9f3c7a1e4b82d6f0a5c9e1378bd24f6a",
                 ["Jwt:Issuer"] = "test-issuer",
                 ["Jwt:Audience"] = "test-audience"
             })

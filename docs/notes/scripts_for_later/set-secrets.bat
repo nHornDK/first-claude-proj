@@ -7,7 +7,7 @@ REM WARNING: do not commit this file with real values filled in.
 set DB_HOST=localhost
 set DB_PASSWORD=Xk#9mP$vL2qN@8rT3
 
-set JWT_SECRET="Yd$8cZ!3pX%tG6sW"
+set JWT_SECRET="9f3c7a1e4b82d6f0a5c9e1378bd24f6a"
 set DEMO_USERNAME="admin"
 set DEMO_PASSWORD="wJs5nR@2bF#mK7hQ"
 
