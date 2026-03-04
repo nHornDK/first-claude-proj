@@ -11,3 +11,12 @@ export interface User {
   email: string | null;
   displayName: string | null;
 }
+
+export interface CalendarEvent {
+  id: number;
+  title: string;
+  description: string | null;
+  startTime: string;
+  endTime: string;
+  color: string;
+}

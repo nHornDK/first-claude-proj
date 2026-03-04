@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh';
@@ -64,6 +65,18 @@ export default function AppShell({ onLogout, appView, onNavChange, toggleColorMo
             >
               <ListItemIcon sx={{ minWidth: 0, color: appView === 'items' ? 'primary.main' : 'text.secondary' }}>
                 <ListAltIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </Tooltip>
+
+          <Tooltip title="Calendar" placement="right">
+            <ListItemButton
+              selected={appView === 'events'}
+              onClick={() => onNavChange('events')}
+              sx={{ justifyContent: 'center', py: 1.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 0, color: appView === 'events' ? 'primary.main' : 'text.secondary' }}>
+                <CalendarTodayIcon />
               </ListItemIcon>
             </ListItemButton>
           </Tooltip>

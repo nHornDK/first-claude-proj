@@ -7,4 +7,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<ItemEntity> Items => Set<ItemEntity>();
     public DbSet<UserEntity> Users => Set<UserEntity>();
+    public DbSet<EventEntity> Events => Set<EventEntity>();
 }

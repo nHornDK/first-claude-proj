@@ -1,4 +1,4 @@
-import type { Item, User } from './types';
+import type { Item, User, CalendarEvent } from './types';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -89,4 +89,37 @@ export async function deleteItem(token: string, id: number): Promise<void> {
     headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Failed to delete item');
+}
+
+export async function fetchEvents(token: string): Promise<CalendarEvent[]> {
+  const res = await fetch(`${BASE_URL}/events`, { headers: authHeaders(token) });
+  if (!res.ok) throw new Error('Failed to fetch events');
+  return res.json();
+}
+
+export async function createEvent(token: string, event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> {
+  const res = await fetch(`${BASE_URL}/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+    body: JSON.stringify(event),
+  });
+  if (!res.ok) throw new Error('Failed to create event');
+  return res.json();
+}
+
+export async function updateEvent(token: string, id: number, event: Omit<CalendarEvent, 'id'>): Promise<void> {
+  const res = await fetch(`${BASE_URL}/events/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+    body: JSON.stringify(event),
+  });
+  if (!res.ok) throw new Error('Failed to update event');
+}
+
+export async function deleteEvent(token: string, id: number): Promise<void> {
+  const res = await fetch(`${BASE_URL}/events/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw new Error('Failed to delete event');
 }

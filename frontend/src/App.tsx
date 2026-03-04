@@ -4,11 +4,12 @@ import { getTheme } from './theme';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ItemsPage from './pages/ItemsPage';
+import EventsPage from './pages/EventsPage';
 import ProfilePage from './pages/ProfilePage';
 import AppShell from './AppShell';
 
 type AuthView = 'login' | 'signup';
-export type AppView = 'items' | 'profile';
+export type AppView = 'items' | 'events' | 'profile';
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -50,6 +51,8 @@ export default function App() {
           >
             {appView === 'profile' ? (
               <ProfilePage token={token} />
+            ) : appView === 'events' ? (
+              <EventsPage token={token} />
             ) : (
               <ItemsPage token={token} />
             )}
