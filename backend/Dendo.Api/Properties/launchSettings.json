@@ -1,21 +1,46 @@
 {
+  "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
+    "Dendo.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "dotnetRunMessages": true,
+      "nativeDebugging": true,
+      "applicationUrl": "http://localhost:80",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "HTTP_PORTS": "80",
+        "ASPNETCORE_URLS": "http://localhost:80"
+      }
+    },
+    "Dendo.Api (Exe)": {
+      "commandName": "Executable",
+      "executablePath": "$(TargetPath)",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:80",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:80"
+      }
+    },
     "http": {
       "commandName": "Project",
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:80",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "HTTP_PORTS": "80"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:80            "
+      }
     },
     "https": {
       "commandName": "Project",
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7143;http://localhost:5136",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7143;http://localhost:5136"
+      }
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -25,7 +50,6 @@
       }
     }
   },
-  "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,

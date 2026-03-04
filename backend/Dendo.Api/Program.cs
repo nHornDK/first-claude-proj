@@ -11,6 +11,7 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders().AddConsole();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
@@ -87,13 +88,13 @@ using (var scope = app.Services.CreateScope())
     if (db.Database.IsRelational()) db.Database.Migrate();
 
     var users = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-    //var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     db.Users.ToList().ForEach(u => {
-        Console.WriteLine(JsonSerializer.Serialize(u));
+        logger.LogInformation($"Users:  {JsonSerializer.Serialize(u)}");
         db.Users.Remove(u);
         });
     db.SaveChanges();
-    Console.WriteLine(JsonSerializer.Serialize(app.Configuration));
+    logger.LogInformation($"app.Configuration: {JsonSerializer.Serialize(app.Configuration)}");
     if (!await users.AnyAsync())
     {
         var demoUser = app.Configuration.GetSection("DemoUser");
