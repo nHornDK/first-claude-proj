@@ -94,7 +94,7 @@ using (var scope = app.Services.CreateScope())
         db.Users.Remove(u);
         });
     db.SaveChanges();
-    logger.LogInformation($"app.Configuration: {JsonSerializer.Serialize(app.Configuration)}");
+    logger.LogInformation($"app.Configuration: {JsonSerializer.Serialize(app.Configuration.GetChildren())}");
     if (!await users.AnyAsync())
     {
         var demoUser = app.Configuration.GetSection("DemoUser");
