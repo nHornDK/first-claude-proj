@@ -39,7 +39,7 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        run: dotnet test Api.Tests/Api.Tests.csproj --configuration Release
+        run: dotnet test Dendo.Api.Tests/Dendo.Api.Tests.csproj --configuration Release
 
   deploy:
     name: Deploy
