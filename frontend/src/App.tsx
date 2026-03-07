@@ -4,6 +4,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { getTheme } from './theme';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import LandingPage from './pages/LandingPage';
 import ItemsPage from './pages/ItemsPage';
 import EventsPage from './pages/EventsPage';
 import ProfilePage from './pages/ProfilePage';
@@ -87,8 +88,8 @@ export default function App() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
-          <Route path="/" element={<Navigate to={token ? '/items' : '/login'} replace />} />
-          <Route path="*" element={<Navigate to={token ? '/items' : '/login'} replace />} />
+          <Route path="/" element={token ? <Navigate to="/items" replace /> : <LandingPage />} />
+          <Route path="*" element={<Navigate to={token ? '/items' : '/'} replace />} />
         </Routes>
       </ThemeProvider>
     </ColorModeContext.Provider>

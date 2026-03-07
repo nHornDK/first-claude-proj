@@ -77,7 +77,7 @@ describe('SignupPage', () => {
 
   it('calls onLoginClick when the sign in link is clicked', async () => {
     render(<SignupPage onSignup={onSignup} onLoginClick={onLoginClick} />);
-    await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    await userEvent.click(screen.getAllByRole('button', { name: /sign in/i })[0]);
     expect(onLoginClick).toHaveBeenCalled();
   });
 });

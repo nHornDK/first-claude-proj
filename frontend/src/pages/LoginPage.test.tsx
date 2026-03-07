@@ -16,7 +16,7 @@ describe('LoginPage', () => {
 
   it('renders the sign-in form', () => {
     render(<LoginPage onLogin={onLogin} onSignupClick={onSignupClick} />);
-    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('LoginPage', () => {
 
   it('calls onSignupClick when the create account link is clicked', async () => {
     render(<LoginPage onLogin={onLogin} onSignupClick={onSignupClick} />);
-    await userEvent.click(screen.getByRole('button', { name: /create one/i }));
+    await userEvent.click(screen.getByRole('button', { name: /create an account/i }));
     expect(onSignupClick).toHaveBeenCalled();
   });
 });

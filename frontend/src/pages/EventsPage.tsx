@@ -109,7 +109,7 @@ function PostCard({ post, eventId }: PostCardProps) {
   }
 
   return (
-    <Box sx={{ bgcolor: 'background.paper', borderRadius: 3, border: 1, borderColor: 'divider', overflow: 'hidden' }}>
+    <Box sx={{ bgcolor: 'background.paper', borderRadius: '16px', border: 1, borderColor: 'divider', overflow: 'hidden' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 2.5, pt: 2, pb: 1.5 }}>
         <Avatar sx={{ width: 38, height: 38, bgcolor: 'primary.main', fontSize: '0.8rem', fontWeight: 700 }}>
@@ -170,7 +170,7 @@ function PostCard({ post, eventId }: PostCardProps) {
               <Avatar sx={{ width: 28, height: 28, fontSize: '0.65rem', fontWeight: 700, bgcolor: 'secondary.main', flexShrink: 0 }}>
                 {initials(c.author)}
               </Avatar>
-              <Box sx={{ flex: 1, bgcolor: 'background.paper', borderRadius: 2, px: 1.5, py: 0.75 }}>
+              <Box sx={{ flex: 1, bgcolor: 'background.paper', borderRadius: '16px', px: 1.5, py: 0.75 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Typography variant="caption" fontWeight={700}>{c.author}</Typography>
                   <Typography variant="caption" color="text.secondary">{fmtRelative(c.createdAt)}</Typography>
@@ -194,8 +194,8 @@ function PostCard({ post, eventId }: PostCardProps) {
               onChange={e => setCommentText(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
               fullWidth
-              sx={{ bgcolor: 'background.paper', borderRadius: 2 }}
-              slotProps={{ input: { sx: { borderRadius: 2 } } }}
+              sx={{ bgcolor: 'background.paper', borderRadius: '16px' }}
+              slotProps={{ input: { sx: { borderRadius: '16px' } } }}
             />
             <IconButton size="small" color="primary" onClick={handleAddComment} disabled={submitting || !commentText.trim()}>
               {submitting ? <CircularProgress size={16} /> : <SendIcon fontSize="small" />}
@@ -320,7 +320,7 @@ export default function EventsPage() {
       <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start', mb: 3 }}>
 
         {/* Upcoming select list */}
-        <Box sx={{ width: 280, flexShrink: 0, bgcolor: 'background.paper', borderRadius: 3, border: 1, borderColor: 'divider', overflow: 'hidden' }}>
+        <Box sx={{ width: 280, flexShrink: 0, bgcolor: 'background.paper', borderRadius: '16px', border: 1, borderColor: 'divider', overflow: 'hidden' }}>
           <Box sx={{ px: 2.5, pt: 2.5, pb: 1.5 }}>
             <Typography variant="h6" fontWeight={700}>Upcoming events</Typography>
             <Typography variant="body2" color="text.secondary">Don&apos;t miss scheduled events</Typography>
@@ -369,10 +369,10 @@ export default function EventsPage() {
         </Box>
 
         {/* Event detail view */}
-        <Box sx={{ flex: 1, minWidth: 0, bgcolor: 'background.paper', borderRadius: 3, border: 1, borderColor: 'divider', minHeight: 320, display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: 1, minWidth: 0, bgcolor: 'background.paper', borderRadius: '16px', border: 1, borderColor: 'divider', minHeight: 320, display: 'flex', flexDirection: 'column' }}>
           {selectedEvent ? (
             <>
-              <Box sx={{ height: 8, bgcolor: selectedEvent.color, borderRadius: '12px 12px 0 0' }} />
+              <Box sx={{ height: 8, bgcolor: selectedEvent.color, borderRadius: '16px 16px 0 0' }} />
               <Box sx={{ p: 3, flex: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2.5 }}>
                   <Box>
@@ -420,13 +420,13 @@ export default function EventsPage() {
         </Typography>
 
         {!selectedEvent ? (
-          <Box sx={{ bgcolor: 'background.paper', borderRadius: 3, border: 1, borderColor: 'divider', p: 4, textAlign: 'center', color: 'text.secondary' }}>
+          <Box sx={{ bgcolor: 'background.paper', borderRadius: '16px', border: 1, borderColor: 'divider', p: 4, textAlign: 'center', color: 'text.secondary' }}>
             <Typography variant="body2">Select an event above to view and post on its wall</Typography>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {/* Create post box */}
-            <Box sx={{ bgcolor: 'background.paper', borderRadius: 3, border: 1, borderColor: 'divider', p: 2.5 }}>
+            <Box sx={{ bgcolor: 'background.paper', borderRadius: '16px', border: 1, borderColor: 'divider', p: 2.5 }}>
               <TextField
                 placeholder={`Post something about "${selectedEvent.title}"…`}
                 value={newPostText}
@@ -465,7 +465,7 @@ export default function EventsPage() {
             {postsStatus === 'loading' ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress /></Box>
             ) : posts.length === 0 ? (
-              <Box sx={{ bgcolor: 'background.paper', borderRadius: 3, border: 1, borderColor: 'divider', p: 4, textAlign: 'center', color: 'text.secondary' }}>
+              <Box sx={{ bgcolor: 'background.paper', borderRadius: '16px', border: 1, borderColor: 'divider', p: 4, textAlign: 'center', color: 'text.secondary' }}>
                 <Typography variant="body2">No posts yet. Be the first to post!</Typography>
               </Box>
             ) : (

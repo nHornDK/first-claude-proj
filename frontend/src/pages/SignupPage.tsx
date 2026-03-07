@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { signup } from '../api';
-import { Box, Paper, Typography, TextField, Button, Alert, Link } from '@mui/material';
+import { Box, Typography, TextField, Button, Alert, Link, Divider } from '@mui/material';
 
 interface Props {
   onSignup: (token: string) => void;
@@ -33,69 +33,97 @@ export default function SignupPage({ onSignup, onLoginClick }: Props) {
   }
 
   return (
-    <Box
-      sx={{
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', flexDirection: 'column', alignItems: 'center', py: { xs: 0, sm: 3 }, px: { xs: 0, sm: 2 } }}>
+      <Box sx={{
+        width: '100%',
+        maxWidth: 1280,
+        bgcolor: 'background.paper',
+        borderRadius: { xs: 0, sm: '16px' },
+        boxShadow: '0 8px 48px rgba(80,60,140,0.10)',
+        minHeight: { xs: '100vh', sm: 'calc(100vh - 48px)' },
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        bgcolor: 'background.default',
-        p: 2,
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{ width: '100%', maxWidth: 400, p: 4, borderRadius: 3 }}
-        component="form"
-        onSubmit={handleSubmit}
-      >
-        <Typography variant="h5" align="center" fontWeight={700} mb={3}>
-          Create account
-        </Typography>
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
-        <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-          required
-          autoComplete="username"
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          required
-          autoComplete="new-password"
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Confirm password"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          fullWidth
-          required
-          autoComplete="new-password"
-          sx={{ mb: 3 }}
-        />
-
-        <Button type="submit" variant="contained" fullWidth disabled={loading} size="large">
-          {loading ? 'Creating account...' : 'Create account'}
-        </Button>
-
-        <Typography align="center" variant="body2" mt={2} color="text.secondary">
-          Already have an account?{' '}
-          <Link component="button" type="button" onClick={onLoginClick} underline="hover">
+        {/* Header */}
+        <Box sx={{ display: 'flex', alignItems: 'center', px: { xs: 3, md: 5 }, py: 2.5, borderBottom: 1, borderColor: 'divider' }}>
+          <Box component="img" src="/logos/logo-09.svg" alt="Dendo" sx={{ height: 28 }} />
+          <Box sx={{ flexGrow: 1 }} />
+          <Typography variant="body2" color="text.secondary" mr={1}>
+            Already have an account?
+          </Typography>
+          <Button variant="outlined" size="small" onClick={onLoginClick}
+            sx={{ borderRadius: '10px', fontWeight: 600, borderColor: 'divider', color: 'text.primary', '&:hover': { borderColor: 'text.secondary', bgcolor: 'action.hover' } }}>
             Sign in
-          </Link>
-        </Typography>
-      </Paper>
+          </Button>
+        </Box>
+
+        {/* Centered form */}
+        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', maxWidth: 400 }}>
+            <Typography variant="h4" fontWeight={800} mb={0.5} letterSpacing="-0.02em">
+              Create account
+            </Typography>
+            <Typography variant="body1" color="text.secondary" mb={4}>
+              Join Dendo and connect with your community
+            </Typography>
+
+            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+
+            <TextField
+              label="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              fullWidth
+              required
+              autoComplete="username"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              fullWidth
+              required
+              autoComplete="new-password"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Confirm password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              fullWidth
+              required
+              autoComplete="new-password"
+              sx={{ mb: 3 }}
+            />
+
+            <Button type="submit" variant="contained" fullWidth disableElevation disabled={loading} size="large"
+              sx={{ py: 1.4, fontSize: '1rem', borderRadius: '12px', fontWeight: 700 }}>
+              {loading ? 'Creating account…' : 'Create account'}
+            </Button>
+
+            <Divider sx={{ my: 3 }} />
+
+            <Typography align="center" variant="body2" color="text.secondary">
+              Already have an account?{' '}
+              <Link component="button" type="button" onClick={onLoginClick} underline="hover" fontWeight={600} color="primary.main">
+                Sign in
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Footer */}
+        <Box sx={{ px: { xs: 3, md: 5 }, py: 2, borderTop: 1, borderColor: 'divider' }}>
+          <Typography variant="caption" color="text.disabled">
+            &copy; {new Date().getFullYear()} Dendo
+          </Typography>
+        </Box>
+      </Box>
     </Box>
   );
 }
