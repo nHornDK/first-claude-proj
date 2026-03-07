@@ -67,16 +67,15 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
           API_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-          CACHE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:cache
+          #CACHE_IMAGE: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:cache
         run: |
           docker pull $CACHE_IMAGE || true
           docker build \
             --cache-from $CACHE_IMAGE \
             --tag $API_IMAGE \
-            --tag $CACHE_IMAGE \
             backend/
           docker push $API_IMAGE
-          docker push $CACHE_IMAGE
+          #docker push $CACHE_IMAGE
           echo "image=$API_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Fill in the new image ID in the Amazon ECS task definition
