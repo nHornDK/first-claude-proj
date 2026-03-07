@@ -60,7 +60,7 @@ describe('ProfilePage', () => {
     await waitFor(() => screen.getByDisplayValue('admin'));
 
     await userEvent.type(screen.getByLabelText(/current password/i), 'oldpass');
-    await userEvent.type(screen.getByLabelText(/^new password$/i), 'newpass1');
+    await userEvent.type(screen.getByLabelText(/^new password/i), 'newpass1');
     await userEvent.type(screen.getByLabelText(/confirm new password/i), 'newpass2');
     await userEvent.click(screen.getByRole('button', { name: /change password/i }));
 
@@ -74,7 +74,7 @@ describe('ProfilePage', () => {
     await waitFor(() => screen.getByDisplayValue('admin'));
 
     await userEvent.type(screen.getByLabelText(/current password/i), 'oldpass');
-    await userEvent.type(screen.getByLabelText(/^new password$/i), 'newpass');
+    await userEvent.type(screen.getByLabelText(/^new password/i), 'newpass');
     await userEvent.type(screen.getByLabelText(/confirm new password/i), 'newpass');
     await userEvent.click(screen.getByRole('button', { name: /change password/i }));
 
@@ -90,7 +90,7 @@ describe('ProfilePage', () => {
     await waitFor(() => screen.getByDisplayValue('admin'));
 
     await userEvent.type(screen.getByLabelText(/current password/i), 'wrongpass');
-    await userEvent.type(screen.getByLabelText(/^new password$/i), 'newpass');
+    await userEvent.type(screen.getByLabelText(/^new password/i), 'newpass');
     await userEvent.type(screen.getByLabelText(/confirm new password/i), 'newpass');
     await userEvent.click(screen.getByRole('button', { name: /change password/i }));
 

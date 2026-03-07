@@ -10,28 +10,26 @@ import {
   IconButton,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh';
 import LogoutIcon from '@mui/icons-material/Logout';
-import type { AppView } from './App';
 
 const DRAWER_WIDTH = 64;
 
 interface Props {
-  token: string;
   onLogout: () => void;
-  appView: AppView;
-  onNavChange: (view: AppView) => void;
   toggleColorMode: () => void;
-  children: React.ReactNode;
 }
 
-export default function AppShell({ onLogout, appView, onNavChange, toggleColorMode, children }: Props) {
+export default function AppShell({ onLogout, toggleColorMode }: Props) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -59,11 +57,11 @@ export default function AppShell({ onLogout, appView, onNavChange, toggleColorMo
         <List disablePadding sx={{ flex: 1, width: '100%' }}>
           <Tooltip title="Items" placement="right">
             <ListItemButton
-              selected={appView === 'items'}
-              onClick={() => onNavChange('items')}
+              selected={location.pathname === '/items'}
+              onClick={() => navigate('/items')}
               sx={{ justifyContent: 'center', py: 1.5 }}
             >
-              <ListItemIcon sx={{ minWidth: 0, color: appView === 'items' ? 'primary.main' : 'text.secondary' }}>
+              <ListItemIcon sx={{ minWidth: 0, color: location.pathname === '/items' ? 'primary.main' : 'text.secondary' }}>
                 <ListAltIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -71,11 +69,11 @@ export default function AppShell({ onLogout, appView, onNavChange, toggleColorMo
 
           <Tooltip title="Calendar" placement="right">
             <ListItemButton
-              selected={appView === 'events'}
-              onClick={() => onNavChange('events')}
+              selected={location.pathname === '/events'}
+              onClick={() => navigate('/events')}
               sx={{ justifyContent: 'center', py: 1.5 }}
             >
-              <ListItemIcon sx={{ minWidth: 0, color: appView === 'events' ? 'primary.main' : 'text.secondary' }}>
+              <ListItemIcon sx={{ minWidth: 0, color: location.pathname === '/events' ? 'primary.main' : 'text.secondary' }}>
                 <CalendarTodayIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -83,11 +81,11 @@ export default function AppShell({ onLogout, appView, onNavChange, toggleColorMo
 
           <Tooltip title="Profile" placement="right">
             <ListItemButton
-              selected={appView === 'profile'}
-              onClick={() => onNavChange('profile')}
+              selected={location.pathname === '/profile'}
+              onClick={() => navigate('/profile')}
               sx={{ justifyContent: 'center', py: 1.5 }}
             >
-              <ListItemIcon sx={{ minWidth: 0, color: appView === 'profile' ? 'primary.main' : 'text.secondary' }}>
+              <ListItemIcon sx={{ minWidth: 0, color: location.pathname === '/profile' ? 'primary.main' : 'text.secondary' }}>
                 <AccountCircleIcon />
               </ListItemIcon>
             </ListItemButton>
@@ -118,7 +116,7 @@ export default function AppShell({ onLogout, appView, onNavChange, toggleColorMo
           p: 3,
         }}
       >
-        {children}
+        <Outlet />
       </Box>
     </Box>
   );

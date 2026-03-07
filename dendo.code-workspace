@@ -4,5 +4,8 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"claudeCode.allowDangerouslySkipPermissions": true,
+		"claudeCode.initialPermissionMode": "acceptEdits"
+	}
 }

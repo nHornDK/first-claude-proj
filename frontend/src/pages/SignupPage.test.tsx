@@ -17,8 +17,8 @@ describe('SignupPage', () => {
   it('renders the create account form', () => {
     render(<SignupPage onSignup={onSignup} onLoginClick={onLoginClick} />);
     expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/^username$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
   });
@@ -27,8 +27,8 @@ describe('SignupPage', () => {
     vi.mocked(api.signup).mockResolvedValue('new-token');
     render(<SignupPage onSignup={onSignup} onLoginClick={onLoginClick} />);
 
-    await userEvent.type(screen.getByLabelText(/^username$/i), 'newuser');
-    await userEvent.type(screen.getByLabelText(/^password$/i), 'secret123');
+    await userEvent.type(screen.getByLabelText(/username/i), 'newuser');
+    await userEvent.type(screen.getByLabelText(/^password/i), 'secret123');
     await userEvent.type(screen.getByLabelText(/confirm password/i), 'secret123');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 
@@ -39,8 +39,8 @@ describe('SignupPage', () => {
   it('shows error when passwords do not match', async () => {
     render(<SignupPage onSignup={onSignup} onLoginClick={onLoginClick} />);
 
-    await userEvent.type(screen.getByLabelText(/^username$/i), 'newuser');
-    await userEvent.type(screen.getByLabelText(/^password$/i), 'secret123');
+    await userEvent.type(screen.getByLabelText(/username/i), 'newuser');
+    await userEvent.type(screen.getByLabelText(/^password/i), 'secret123');
     await userEvent.type(screen.getByLabelText(/confirm password/i), 'different');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 
@@ -52,8 +52,8 @@ describe('SignupPage', () => {
     vi.mocked(api.signup).mockRejectedValue(new Error('Username is already taken.'));
     render(<SignupPage onSignup={onSignup} onLoginClick={onLoginClick} />);
 
-    await userEvent.type(screen.getByLabelText(/^username$/i), 'admin');
-    await userEvent.type(screen.getByLabelText(/^password$/i), 'secret123');
+    await userEvent.type(screen.getByLabelText(/username/i), 'admin');
+    await userEvent.type(screen.getByLabelText(/^password/i), 'secret123');
     await userEvent.type(screen.getByLabelText(/confirm password/i), 'secret123');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 
@@ -67,8 +67,8 @@ describe('SignupPage', () => {
     vi.mocked(api.signup).mockImplementation(() => new Promise(() => {}));
     render(<SignupPage onSignup={onSignup} onLoginClick={onLoginClick} />);
 
-    await userEvent.type(screen.getByLabelText(/^username$/i), 'newuser');
-    await userEvent.type(screen.getByLabelText(/^password$/i), 'secret123');
+    await userEvent.type(screen.getByLabelText(/username/i), 'newuser');
+    await userEvent.type(screen.getByLabelText(/^password/i), 'secret123');
     await userEvent.type(screen.getByLabelText(/confirm password/i), 'secret123');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 

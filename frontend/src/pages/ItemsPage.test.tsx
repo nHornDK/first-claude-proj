@@ -38,7 +38,7 @@ describe('ItemsPage', () => {
     render(<ItemsPage token={TOKEN} />);
     await waitFor(() => screen.getByText('First Item'));
 
-    await userEvent.type(screen.getByLabelText(/^name$/i), 'New Item');
+    await userEvent.type(screen.getByLabelText(/name/i), 'New Item');
     await userEvent.type(screen.getByLabelText(/description/i), 'desc');
     await userEvent.click(screen.getByRole('button', { name: /add item/i }));
 
@@ -79,7 +79,7 @@ describe('ItemsPage', () => {
     render(<ItemsPage token={TOKEN} />);
     await waitFor(() => screen.getByText('First Item'));
 
-    await userEvent.type(screen.getByLabelText(/^name$/i), 'Bad Item');
+    await userEvent.type(screen.getByLabelText(/name/i), 'Bad Item');
     await userEvent.click(screen.getByRole('button', { name: /add item/i }));
 
     await waitFor(() => expect(screen.getByText(/failed to create item/i)).toBeInTheDocument());

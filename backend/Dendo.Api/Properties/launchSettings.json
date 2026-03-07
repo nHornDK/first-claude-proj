@@ -3,7 +3,7 @@
   "profiles": {
     "Dendo.Api": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "dotnetRunMessages": true,
       "nativeDebugging": true,
@@ -17,7 +17,7 @@
     "Dendo.Api (Exe)": {
       "commandName": "Executable",
       "executablePath": "$(TargetPath)",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:80",
       "environmentVariables": {
