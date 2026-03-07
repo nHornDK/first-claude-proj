@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 68">
+  <!-- 14: Solid square mark with negative-space D, + wordmark -->
+  <rect x="4" y="4" width="58" height="58" rx="10" fill="#1d4ed8"/>
+  <!-- Negative space D (white) -->
+  <rect x="18" y="16" width="7" height="34" rx="3.5" fill="white"/>
+  <path d="M 25,16 A 17,17 0 0,1 25,50" fill="none" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <text x="76" y="46" font-family="'Segoe UI',Arial,sans-serif" font-size="36" font-weight="700" letter-spacing="-1.5" fill="#1e3a8a">dendo</text>
+</svg>

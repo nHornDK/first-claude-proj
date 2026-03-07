@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64">
+  <!-- 12: Bright sky-blue pill with white bold text -->
+  <rect x="0" y="4" width="240" height="56" rx="10" fill="#0284c7"/>
+  <!-- Subtle inner highlight -->
+  <rect x="2" y="5" width="236" height="28" rx="9" fill="white" opacity="0.08"/>
+  <text x="120" y="41" font-family="'Segoe UI',Arial,sans-serif" font-size="34" font-weight="700" letter-spacing="-1" fill="white" text-anchor="middle">dendo</text>
+</svg>

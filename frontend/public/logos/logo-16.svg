@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 68">
+  <!-- 16: Bold condensed all-caps blocky -->
+  <text x="12" y="52" font-family="'Arial Narrow','Arial',sans-serif" font-size="48" font-weight="900" letter-spacing="1" fill="#312e81">DENDO</text>
+  <!-- Bold accent bar above -->
+  <rect x="12" y="8" width="60" height="6" rx="3" fill="#6366f1"/>
+</svg>

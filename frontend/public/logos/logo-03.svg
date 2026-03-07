@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 68">
+  <!-- 03: Circle seal / stamp style -->
+  <circle cx="34" cy="34" r="30" fill="none" stroke="#7c3aed" stroke-width="2.5"/>
+  <circle cx="34" cy="34" r="24" fill="none" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3 2"/>
+  <text x="34" y="39" font-family="'Segoe UI',Arial,sans-serif" font-size="16" font-weight="700" fill="#7c3aed" text-anchor="middle">D</text>
+  <text x="80" y="32" font-family="'Segoe UI',Arial,sans-serif" font-size="38" font-weight="700" letter-spacing="-1.5" fill="#1e1b4b">dendo</text>
+  <text x="80" y="52" font-family="'Segoe UI',Arial,sans-serif" font-size="10" font-weight="400" letter-spacing="4" fill="#7c3aed">STUDIO</text>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 64">
+  <!-- 04: Split color wordmark — "den" dark, "do" amber -->
+  <text x="12" y="48" font-family="'Segoe UI',Arial,sans-serif" font-size="44" font-weight="800" letter-spacing="-2" fill="#0f172a">den</text>
+  <text x="108" y="48" font-family="'Segoe UI',Arial,sans-serif" font-size="44" font-weight="800" letter-spacing="-2" fill="#f59e0b">do</text>
+</svg>

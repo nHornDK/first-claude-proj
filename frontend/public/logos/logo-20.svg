@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 68">
+  <!-- 20: Pure minimal wordmark — perfect spacing, elegant -->
+  <text x="115" y="44" font-family="'Segoe UI',Arial,sans-serif" font-size="30" font-weight="300" letter-spacing="10" fill="#1e293b" text-anchor="middle">dendo</text>
+  <!-- Single thin hairline below -->
+  <line x1="44" y1="54" x2="186" y2="54" stroke="#94a3b8" stroke-width="0.75"/>
+</svg>

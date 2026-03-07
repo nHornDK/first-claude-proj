@@ -34,7 +34,7 @@ export default function AppShell({ onLogout, toggleColorMode }: Props) {
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AppBar position="sticky" color="default" elevation={1}>
         <Toolbar variant="dense" sx={{ gap: 0.5 }}>
-          <Box component="img" src="/dendo-logo.svg" alt="Dendo" sx={{ height: 32, mr: 1 }} />
+          <Box component="img" src="/logos/logo-09.svg" alt="Dendo" sx={{ height: 32, mr: 1 }} />
 
           <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 

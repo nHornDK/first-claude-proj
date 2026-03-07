@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 68">
+  <!-- 17: Code / bracket style -->
+  <text x="12" y="48" font-family="'Cascadia Code','Consolas','Courier New',monospace" font-size="18" font-weight="400" fill="#6b7280">&lt;</text>
+  <text x="34" y="48" font-family="'Cascadia Code','Consolas','Courier New',monospace" font-size="32" font-weight="700" letter-spacing="-1" fill="#16a34a">dendo</text>
+  <text x="220" y="48" font-family="'Cascadia Code','Consolas','Courier New',monospace" font-size="18" font-weight="400" fill="#6b7280">/&gt;</text>
+</svg>

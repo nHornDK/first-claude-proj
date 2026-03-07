@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64">
+  <!-- 01: Coral underline accent wordmark -->
+  <text x="12" y="46" font-family="'Segoe UI',Arial,sans-serif" font-size="42" font-weight="700" letter-spacing="-2" fill="#111827">dendo</text>
+  <rect x="12" y="54" width="216" height="5" rx="2.5" fill="#e11d48"/>
+</svg>

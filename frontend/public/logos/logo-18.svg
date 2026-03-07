@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 68">
+  <!-- 18: Two-weight wordmark — "den" heavy, "do" ultra thin -->
+  <text x="12" y="50" font-family="'Segoe UI',Arial,sans-serif" font-size="44" font-weight="900" letter-spacing="-2" fill="#0f172a">den</text>
+  <text x="114" y="50" font-family="'Segoe UI',Arial,sans-serif" font-size="44" font-weight="200" letter-spacing="-2" fill="#0f172a">do</text>
+  <!-- Thin vertical divider between them -->
+  <line x1="112" y1="14" x2="112" y2="56" stroke="#e2e8f0" stroke-width="1.5"/>
+</svg>

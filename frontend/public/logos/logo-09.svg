@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 68">
+  <!-- 09: Orange gradient bold wordmark -->
+  <defs>
+    <linearGradient id="g9" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
+  <!-- Abstract mark: two offset bold arcs -->
+  <path d="M 14,48 A 22,22 0 0,1 58,48" fill="none" stroke="url(#g9)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 22,38 A 14,14 0 0,1 50,38" fill="none" stroke="url(#g9)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+  <text x="74" y="49" font-family="'Segoe UI',Arial,sans-serif" font-size="40" font-weight="700" letter-spacing="-1.5" fill="url(#g9)">dendo</text>
+</svg>

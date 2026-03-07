@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 68">
+  <!-- 07: Bold italic, red accent on first letter -->
+  <text x="10" y="50" font-family="'Segoe UI',Arial,sans-serif" font-size="46" font-weight="800" font-style="italic" letter-spacing="-2" fill="#dc2626">d</text>
+  <text x="38" y="50" font-family="'Segoe UI',Arial,sans-serif" font-size="46" font-weight="800" font-style="italic" letter-spacing="-2" fill="#111827">endo</text>
+</svg>
