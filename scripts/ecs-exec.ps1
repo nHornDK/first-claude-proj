@@ -3,6 +3,7 @@ param(
     [string]$Service   = "dendo_service",
     [string]$Container = "dendo_container"
 )
+aws ecs update-service --cluster $CLUSTER --service $Service --task $taskArn --force-new-deployment --enable-execute-command
 
 $taskArn = aws ecs list-tasks `
     --cluster $Cluster `
