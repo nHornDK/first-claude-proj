@@ -13,11 +13,20 @@ export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [mode, setMode] = useState<'light' | 'dark'>(
+    () => (localStorage.getItem('colorMode') as 'light' | 'dark') ?? 'light'
+  );
   const navigate = useNavigate();
 
   const colorMode = useMemo(
-    () => ({ toggleColorMode: () => setMode((m) => (m === 'light' ? 'dark' : 'light')) }),
+    () => ({
+      toggleColorMode: () =>
+        setMode((m) => {
+          const next = m === 'light' ? 'dark' : 'light';
+          localStorage.setItem('colorMode', next);
+          return next;
+        }),
+    }),
     []
   );
 

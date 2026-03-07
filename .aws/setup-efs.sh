@@ -11,7 +11,7 @@ set -euo pipefail
 
 REGION="eu-north-1"
 TASK_DEF_FILE=".aws/task-definition.json"
-EFS_NAME="dendo-postgres-data"
+EFS_NAME="dendo_postgres_data"
 CLUSTER="dendo_cluster"
 SERVICE="dendo_service"
 
@@ -35,8 +35,15 @@ fi
 echo "  Subnets : $SUBNET_IDS"
 echo "  SG      : $ECS_SG_ID"
 
-# ── Create EFS filesystem (skip if FS_ID already set) ────────────────────────
+# ── Create EFS filesystem (skip if already exists with same name tag) ────────
 if [[ -z "${FS_ID:-}" ]]; then
+  FS_ID=$(aws efs describe-file-systems \
+    --region "$REGION" \
+    --query "FileSystems[?Tags[?Key=='Name'&&Value=='$EFS_NAME']].FileSystemId | [0]" \
+    --output text)
+fi
+
+if [[ -z "$FS_ID" || "$FS_ID" == "None" ]]; then
   echo "→ Creating EFS filesystem..."
   FS_ID=$(aws efs create-file-system \
     --region "$REGION" \
@@ -66,20 +73,30 @@ VPC_ID=$(aws ec2 describe-security-groups \
   --output text)
 
 echo "→ Creating EFS security group in VPC $VPC_ID..."
-EFS_SG_ID=$(aws ec2 create-security-group \
+EFS_SG_ID=$(aws ec2 describe-security-groups \
   --region "$REGION" \
-  --group-name "dendo-efs-sg" \
-  --description "NFS access for dendo EFS" \
-  --vpc-id "$VPC_ID" \
-  --query "GroupId" \
+  --filters "Name=group-name,Values=dendo-efs-sg" "Name=vpc-id,Values=$VPC_ID" \
+  --query "SecurityGroups[0].GroupId" \
   --output text)
 
-aws ec2 authorize-security-group-ingress \
-  --region "$REGION" \
-  --group-id "$EFS_SG_ID" \
-  --protocol tcp \
-  --port 2049 \
-  --source-group "$ECS_SG_ID"
+if [[ -z "$EFS_SG_ID" || "$EFS_SG_ID" == "None" ]]; then
+  EFS_SG_ID=$(aws ec2 create-security-group \
+    --region "$REGION" \
+    --group-name "dendo-efs-sg" \
+    --description "NFS access for dendo EFS" \
+    --vpc-id "$VPC_ID" \
+    --query "GroupId" \
+    --output text)
+  aws ec2 authorize-security-group-ingress \
+    --region "$REGION" \
+    --group-id "$EFS_SG_ID" \
+    --protocol tcp \
+    --port 2049 \
+    --source-group "$ECS_SG_ID"
+  echo "  EFS SG created: $EFS_SG_ID"
+else
+  echo "  EFS SG already exists: $EFS_SG_ID"
+fi
 
 echo "  EFS SG: $EFS_SG_ID"
 
@@ -87,12 +104,21 @@ echo "  EFS SG: $EFS_SG_ID"
 echo "→ Creating EFS mount targets..."
 IFS=',' read -ra SUBNETS <<< "$SUBNET_IDS"
 for SUBNET in "${SUBNETS[@]}"; do
-  aws efs create-mount-target \
+  EXISTS=$(aws efs describe-mount-targets \
     --region "$REGION" \
     --file-system-id "$FS_ID" \
-    --subnet-id "$SUBNET" \
-    --security-groups "$EFS_SG_ID"
-  echo "  Mount target created in $SUBNET"
+    --query "MountTargets[?SubnetId=='$SUBNET'].MountTargetId | [0]" \
+    --output text)
+  if [[ -z "$EXISTS" || "$EXISTS" == "None" ]]; then
+    aws efs create-mount-target \
+      --region "$REGION" \
+      --file-system-id "$FS_ID" \
+      --subnet-id "$SUBNET" \
+      --security-groups "$EFS_SG_ID"
+    echo "  Mount target created in $SUBNET"
+  else
+    echo "  Mount target already exists in $SUBNET ($EXISTS)"
+  fi
 done
 
 # ── Patch task-definition.json using Node.js ──────────────────────────────────
