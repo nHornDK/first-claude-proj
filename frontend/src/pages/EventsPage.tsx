@@ -16,10 +16,20 @@ import {
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const EVENT_COLORS = ['#bbdefb', '#c8e6c9', '#fff9c4', '#ffcdd2', '#e1bee7'];
+
+// Saturated text/dot colors matching each pastel
+const EVENT_TEXT_COLORS: Record<string, string> = {
+  '#bbdefb': '#1565c0',
+  '#c8e6c9': '#2e7d32',
+  '#fff9c4': '#f57f17',
+  '#ffcdd2': '#c62828',
+  '#e1bee7': '#6a1b9a',
+};
 
 interface Props {
   token: string;
@@ -44,6 +54,10 @@ function emptyForm(date?: string): EventForm {
 
 function toDateStr(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function fmtTime(iso: string) {
+  return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
 }
 
 export default function EventsPage({ token }: Props) {
@@ -143,155 +157,190 @@ export default function EventsPage({ token }: Props) {
 
   const upcoming = useMemo(() => {
     const now = new Date();
-    const soon = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     return events
-      .filter(e => new Date(e.startTime) >= now && new Date(e.startTime) <= soon)
+      .filter(e => new Date(e.startTime) >= now)
       .sort((a, b) => a.startTime.localeCompare(b.startTime))
-      .slice(0, 5);
+      .slice(0, 10);
   }, [events]);
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight={700}>Calendar</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => openCreate()}>
-          Add Event
-        </Button>
-      </Box>
+    <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start' }}>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
-      {/* Month navigation */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <IconButton size="small" onClick={() => setViewDate(new Date(year, month - 1, 1))}>
-          <ChevronLeftIcon />
-        </IconButton>
-        <Typography variant="h6" fontWeight={600} minWidth={200} textAlign="center">
-          {monthLabel}
+      {/* ── Upcoming events panel ── */}
+      <Box
+        sx={{
+          width: 270,
+          flexShrink: 0,
+          bgcolor: 'background.paper',
+          borderRadius: 3,
+          border: 1,
+          borderColor: 'divider',
+          p: 2.5,
+        }}
+      >
+        <Typography variant="h6" fontWeight={700} mb={0.5}>Upcoming events</Typography>
+        <Typography variant="body2" color="text.secondary" mb={2.5}>
+          Don&apos;t miss scheduled events
         </Typography>
-        <IconButton size="small" onClick={() => setViewDate(new Date(year, month + 1, 1))}>
-          <ChevronRightIcon />
-        </IconButton>
-      </Box>
 
-      {/* Calendar grid */}
-      <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 2, overflow: 'hidden', bgcolor: 'background.paper' }}>
-        {/* Weekday headers */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', bgcolor: 'action.hover' }}>
-          {WEEKDAYS.map(d => (
-            <Box key={d} sx={{ p: 1, textAlign: 'center' }}>
-              <Typography variant="caption" fontWeight={600} color="text.secondary">{d}</Typography>
-            </Box>
-          ))}
-        </Box>
-
-        {/* Day cells */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-          {calendarDays.map((date, i) => {
-            const isToday = date?.toDateString() === today.toDateString();
-            const dayEvents = date ? eventsForDay(date) : [];
-            return (
-              <Box
-                key={i}
-                onClick={() => date && openCreate(date)}
-                sx={{
-                  minHeight: 90,
-                  p: 0.75,
-                  borderTop: 1,
-                  borderLeft: i % 7 !== 0 ? 1 : 0,
-                  borderColor: 'divider',
-                  cursor: date ? 'pointer' : 'default',
-                  bgcolor: date ? 'background.paper' : 'action.hover',
-                  '&:hover': date ? { bgcolor: 'action.hover' } : {},
-                }}
-              >
-                {date && (
-                  <>
+        {upcoming.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">No upcoming events</Typography>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {upcoming.map(ev => {
+              const textColor = EVENT_TEXT_COLORS[ev.color] ?? 'text.primary';
+              return (
+                <Box key={ev.id}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: textColor,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <Typography variant="caption" sx={{ color: textColor, fontWeight: 600 }}>
+                        {fmtTime(ev.startTime)}–{fmtTime(ev.endTime)}
+                      </Typography>
+                    </Box>
+                    <IconButton
+                      size="small"
+                      onClick={() => openEdit(ev)}
+                      sx={{ p: 0.25, color: 'text.secondary' }}
+                      aria-label="More options"
+                    >
+                      <MoreHorizIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                  <Typography variant="body2" fontWeight={700} mt={0.5} sx={{ ml: 2 }}>
+                    {ev.title}
+                  </Typography>
+                  {ev.description && (
                     <Typography
                       variant="caption"
-                      fontWeight={isToday ? 700 : 400}
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 24,
-                        height: 24,
-                        borderRadius: '50%',
-                        bgcolor: isToday ? 'primary.main' : 'transparent',
-                        color: isToday ? 'primary.contrastText' : 'text.primary',
-                        mb: 0.5,
-                      }}
+                      color="text.secondary"
+                      display="block"
+                      noWrap
+                      sx={{ ml: 2 }}
                     >
-                      {date.getDate()}
+                      {ev.description}
                     </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-                      {dayEvents.map(ev => (
-                        <Box
-                          key={ev.id}
-                          onClick={e => { e.stopPropagation(); openEdit(ev); }}
-                          sx={{
-                            bgcolor: ev.color,
-                            borderRadius: 1,
-                            px: 0.75,
-                            py: 0.25,
-                            cursor: 'pointer',
-                            '&:hover': { filter: 'brightness(0.92)' },
-                          }}
-                        >
-                          <Typography variant="caption" noWrap fontWeight={500} display="block" color="text.primary">
-                            {ev.title}
-                          </Typography>
-                          <Typography variant="caption" noWrap display="block" sx={{ opacity: 0.65, fontSize: '0.65rem', color: 'text.primary' }}>
-                            {new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}–{new Date(ev.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}
-                          </Typography>
-                        </Box>
-                      ))}
-                    </Box>
-                  </>
-                )}
-              </Box>
-            );
-          })}
-        </Box>
-      </Box>
-
-      {/* Upcoming events */}
-      {upcoming.length > 0 && (
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="subtitle1" fontWeight={600} mb={1}>Upcoming events</Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {upcoming.map(ev => (
-              <Box
-                key={ev.id}
-                onClick={() => openEdit(ev)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  p: 1.5,
-                  borderRadius: 2,
-                  bgcolor: 'background.paper',
-                  border: 1,
-                  borderColor: 'divider',
-                  cursor: 'pointer',
-                  '&:hover': { bgcolor: 'action.hover' },
-                }}
-              >
-                <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: ev.color, border: 1, borderColor: 'divider', flexShrink: 0 }} />
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="body2" fontWeight={600} noWrap>{ev.title}</Typography>
-                  {ev.description && (
-                    <Typography variant="caption" color="text.secondary" noWrap display="block">{ev.description}</Typography>
                   )}
                 </Box>
-                <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
-                  {new Date(ev.startTime).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}
-                </Typography>
+              );
+            })}
+          </Box>
+        )}
+      </Box>
+
+      {/* ── Calendar ── */}
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5" fontWeight={700}>Calendar</Typography>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => openCreate()}>
+            Add Event
+          </Button>
+        </Box>
+
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+        {/* Month navigation */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <IconButton size="small" onClick={() => setViewDate(new Date(year, month - 1, 1))}>
+            <ChevronLeftIcon />
+          </IconButton>
+          <Typography variant="h6" fontWeight={600} minWidth={200} textAlign="center">
+            {monthLabel}
+          </Typography>
+          <IconButton size="small" onClick={() => setViewDate(new Date(year, month + 1, 1))}>
+            <ChevronRightIcon />
+          </IconButton>
+        </Box>
+
+        {/* Calendar grid */}
+        <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 2, overflow: 'hidden', bgcolor: 'background.paper' }}>
+          {/* Weekday headers */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', bgcolor: 'action.hover' }}>
+            {WEEKDAYS.map(d => (
+              <Box key={d} sx={{ p: 1, textAlign: 'center' }}>
+                <Typography variant="caption" fontWeight={600} color="text.secondary">{d}</Typography>
               </Box>
             ))}
           </Box>
+
+          {/* Day cells */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+            {calendarDays.map((date, i) => {
+              const isToday = date?.toDateString() === today.toDateString();
+              const dayEvents = date ? eventsForDay(date) : [];
+              return (
+                <Box
+                  key={i}
+                  onClick={() => date && openCreate(date)}
+                  sx={{
+                    minHeight: 90,
+                    p: 0.75,
+                    borderTop: 1,
+                    borderLeft: i % 7 !== 0 ? 1 : 0,
+                    borderColor: 'divider',
+                    cursor: date ? 'pointer' : 'default',
+                    bgcolor: date ? 'background.paper' : 'action.hover',
+                    '&:hover': date ? { bgcolor: 'action.hover' } : {},
+                  }}
+                >
+                  {date && (
+                    <>
+                      <Typography
+                        variant="caption"
+                        fontWeight={isToday ? 700 : 400}
+                        sx={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 24,
+                          height: 24,
+                          borderRadius: '50%',
+                          bgcolor: isToday ? 'primary.main' : 'transparent',
+                          color: isToday ? 'primary.contrastText' : 'text.primary',
+                          mb: 0.5,
+                        }}
+                      >
+                        {date.getDate()}
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                        {dayEvents.map(ev => (
+                          <Box
+                            key={ev.id}
+                            onClick={e => { e.stopPropagation(); openEdit(ev); }}
+                            sx={{
+                              bgcolor: ev.color,
+                              borderRadius: 1,
+                              px: 0.75,
+                              py: 0.25,
+                              cursor: 'pointer',
+                              '&:hover': { filter: 'brightness(0.92)' },
+                            }}
+                          >
+                            <Typography variant="caption" noWrap fontWeight={500} display="block" color="text.primary">
+                              {ev.title}
+                            </Typography>
+                            <Typography variant="caption" noWrap display="block" sx={{ opacity: 0.65, fontSize: '0.65rem', color: 'text.primary' }}>
+                              {fmtTime(ev.startTime)}–{fmtTime(ev.endTime)}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    </>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
         </Box>
-      )}
+      </Box>
 
       {/* Create / Edit dialog */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="xs" fullWidth>

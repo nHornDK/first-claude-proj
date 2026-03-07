@@ -54,3 +54,13 @@ aws ecs register-task-definition --cli-input-json file://.aws/task-definition.js
 
 
     aws logs create-log-group --log-group-name /ecs/dendo --region eu-north-1
+
+
+aws ecs execute-command --cluster dendo_cluster --task arn:aws:ecs:eu-north-1:654862558684:task/dendo_cluster/4efb5447d25e42c7aa9226fdca12c55d --container dendo_container  --interactive --command "/bin/sh"
+
+
+aws ecs update-service `
+  --cluster dendo_cluster `
+  --service dendo_service `
+  --enable-execute-command `
+  --region eu-north-1

@@ -11,7 +11,10 @@ const TOKEN = 'test-token';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const now = new Date();
-const todayDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+// Use the 1st of the current month at 00:00 UTC — always in the past, always in
+// the current month's calendar view, and never shown in the upcoming panel.
+const firstOfMonth = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-01`;
 
 // Future event 2 hours from now — guaranteed to pass the upcoming filter
 const future = new Date(now.getTime() + 2 * 60 * 60 * 1000);
@@ -24,8 +27,8 @@ const mockCalendarEvent: CalendarEvent = {
   id: 1,
   title: 'Team Meeting',
   description: 'Weekly sync',
-  startTime: `${todayDate}T08:00:00Z`,
-  endTime: `${todayDate}T09:00:00Z`,
+  startTime: `${firstOfMonth}T00:00:00Z`,
+  endTime: `${firstOfMonth}T01:00:00Z`,
   color: '#bbdefb',
 };
 
@@ -74,8 +77,8 @@ describe('EventsPage', () => {
       id: 3,
       title: 'New Conference',
       description: null,
-      startTime: `${todayDate}T14:00:00Z`,
-      endTime: `${todayDate}T15:00:00Z`,
+      startTime: `${firstOfMonth}T14:00:00Z`,
+      endTime: `${firstOfMonth}T15:00:00Z`,
       color: '#bbdefb',
     };
     vi.mocked(api.createEvent).mockResolvedValue(newEvent);
