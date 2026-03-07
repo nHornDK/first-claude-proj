@@ -81,15 +81,19 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (db.Database.IsRelational())
-    {
-        db.Database.Migrate();
-        db.Database.EnsureCreated();
-    }
+    await db.Database.MigrateAsync();
+
+    //using (var scope = app.Services.CreateScope())
+    //{
+    //    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    //    if (db.Database.IsRelational())
+    //    {
+    //        db.Database.Migrate();
+    //        db.Database.EnsureCreated();
+    //    }
 
     var users = scope.ServiceProvider.GetRequiredService<IUserRepository>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -107,6 +111,7 @@ using (var scope = app.Services.CreateScope())
         await users.CreateAsync(admin);
     }
 }
+//}
 
 if (app.Environment.IsDevelopment() || true)
 {
