@@ -1,4 +1,4 @@
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { getTheme } from './theme';
@@ -8,15 +8,19 @@ import ItemsPage from './pages/ItemsPage';
 import EventsPage from './pages/EventsPage';
 import ProfilePage from './pages/ProfilePage';
 import AppShell from './AppShell';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { setToken, clearToken } from './store/slices/authSlice';
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 export default function App() {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+  const dispatch = useAppDispatch();
+  const token = useAppSelector(state => state.auth.token);
+  const navigate = useNavigate();
+
   const [mode, setMode] = useState<'light' | 'dark'>(
     () => (localStorage.getItem('colorMode') as 'light' | 'dark') ?? 'light'
   );
-  const navigate = useNavigate();
 
   const colorMode = useMemo(
     () => ({
@@ -33,15 +37,19 @@ export default function App() {
   const theme = useMemo(() => getTheme(mode), [mode]);
 
   function handleLogin(t: string) {
-    localStorage.setItem('token', t);
-    setToken(t);
+    dispatch(setToken(t));
     navigate('/items');
   }
 
   function handleLogout() {
-    localStorage.removeItem('token');
-    setToken(null);
+    dispatch(clearToken());
   }
+
+  useEffect(() => {
+    const onUnauthorized = () => dispatch(clearToken());
+    window.addEventListener('auth:unauthorized', onUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', onUnauthorized);
+  }, [dispatch]);
 
   const shell = token ? (
     <AppShell onLogout={handleLogout} toggleColorMode={colorMode.toggleColorMode} />
@@ -75,9 +83,9 @@ export default function App() {
             }
           />
           <Route element={shell}>
-            <Route path="/items" element={<ItemsPage token={token!} />} />
-            <Route path="/events" element={<EventsPage token={token!} />} />
-            <Route path="/profile" element={<ProfilePage token={token!} />} />
+            <Route path="/items" element={<ItemsPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
           <Route path="/" element={<Navigate to={token ? '/items' : '/login'} replace />} />
           <Route path="*" element={<Navigate to={token ? '/items' : '/login'} replace />} />

@@ -1,6 +1,14 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { fetchEvents, createEvent, updateEvent, deleteEvent, fetchPosts, createPost, deletePost, createComment, deleteComment } from '../api';
-import type { CalendarEvent, Post, PostComment } from '../types';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import {
+  fetchEventsThunk, createEventThunk, updateEventThunk, deleteEventThunk,
+  setSelectedId, clearError as clearEventsError,
+} from '../store/slices/eventsSlice';
+import {
+  fetchPostsThunk, createPostThunk, deletePostThunk,
+  createCommentThunk, deleteCommentThunk, clearPosts, clearError as clearPostsError,
+} from '../store/slices/postsSlice';
+import type { CalendarEvent, Post } from '../types';
 import {
   Box,
   Typography,
@@ -39,10 +47,6 @@ const EVENT_TEXT_COLORS: Record<string, string> = {
   '#ffcdd2': '#c62828',
   '#e1bee7': '#6a1b9a',
 };
-
-interface Props {
-  token: string;
-}
 
 interface EventForm {
   title: string;
@@ -86,14 +90,11 @@ function initials(name: string) {
 // ── Post card ─────────────────────────────────────────────────────────────────
 interface PostCardProps {
   post: Post;
-  token: string;
   eventId: number;
-  onDelete: (postId: number) => void;
-  onCommentAdded: (postId: number, comment: PostComment) => void;
-  onCommentDeleted: (postId: number, commentId: number) => void;
 }
 
-function PostCard({ post, token, eventId, onDelete, onCommentAdded, onCommentDeleted }: PostCardProps) {
+function PostCard({ post, eventId }: PostCardProps) {
+  const dispatch = useAppDispatch();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -101,14 +102,10 @@ function PostCard({ post, token, eventId, onDelete, onCommentAdded, onCommentDel
   async function handleAddComment() {
     if (!commentText.trim()) return;
     setSubmitting(true);
-    try {
-      const comment = await createComment(token, eventId, post.id, commentText.trim());
-      onCommentAdded(post.id, comment);
-      setCommentText('');
-      setShowComments(true);
-    } finally {
-      setSubmitting(false);
-    }
+    await dispatch(createCommentThunk({ eventId, postId: post.id, content: commentText.trim() }));
+    setCommentText('');
+    setShowComments(true);
+    setSubmitting(false);
   }
 
   return (
@@ -123,7 +120,7 @@ function PostCard({ post, token, eventId, onDelete, onCommentAdded, onCommentDel
           <Typography variant="caption" color="text.secondary">{fmtRelative(post.createdAt)}</Typography>
         </Box>
         {post.isOwn && (
-          <IconButton size="small" color="error" onClick={() => onDelete(post.id)} aria-label="Delete post">
+          <IconButton size="small" color="error" onClick={() => dispatch(deletePostThunk({ eventId, postId: post.id }))} aria-label="Delete post">
             <DeleteIcon fontSize="small" />
           </IconButton>
         )}
@@ -181,7 +178,7 @@ function PostCard({ post, token, eventId, onDelete, onCommentAdded, onCommentDel
                 <Typography variant="body2" sx={{ fontSize: '0.82rem' }}>{c.content}</Typography>
               </Box>
               {c.isOwn && (
-                <IconButton size="small" onClick={() => onCommentDeleted(post.id, c.id)} sx={{ p: 0.25, color: 'text.disabled' }}>
+                <IconButton size="small" onClick={() => dispatch(deleteCommentThunk({ eventId, postId: post.id, commentId: c.id }))} sx={{ p: 0.25, color: 'text.disabled' }}>
                   <CloseIcon sx={{ fontSize: 14 }} />
                 </IconButton>
               )}
@@ -211,12 +208,11 @@ function PostCard({ post, token, eventId, onDelete, onCommentAdded, onCommentDel
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
-export default function EventsPage({ token }: Props) {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [error, setError] = useState('');
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [postsLoading, setPostsLoading] = useState(false);
+export default function EventsPage() {
+  const dispatch = useAppDispatch();
+  const { events, selectedId, status: eventsStatus, error: eventsError } = useAppSelector(state => state.events);
+  const { posts, status: postsStatus, error: postsError } = useAppSelector(state => state.posts);
+
   const [newPostText, setNewPostText] = useState('');
   const [newPostImage, setNewPostImage] = useState<string | null>(null);
   const [postSubmitting, setPostSubmitting] = useState(false);
@@ -228,19 +224,13 @@ export default function EventsPage({ token }: Props) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchEvents(token)
-      .then(setEvents)
-      .catch(() => setError('Failed to load events.'));
-  }, [token]);
+    dispatch(fetchEventsThunk());
+  }, [dispatch]);
 
   useEffect(() => {
-    if (selectedId === null) { setPosts([]); return; }
-    setPostsLoading(true);
-    fetchPosts(token, selectedId)
-      .then(setPosts)
-      .catch(() => setError('Failed to load posts.'))
-      .finally(() => setPostsLoading(false));
-  }, [token, selectedId]);
+    if (selectedId === null) { dispatch(clearPosts()); return; }
+    dispatch(fetchPostsThunk(selectedId));
+  }, [dispatch, selectedId]);
 
   const upcoming = useMemo(() => {
     const now = new Date();
@@ -272,38 +262,25 @@ export default function EventsPage({ token }: Props) {
   async function handleSave() {
     if (!form.title.trim()) return;
     setSaving(true);
-    try {
-      const payload = {
-        title: form.title.trim(),
-        description: form.description.trim() || null,
-        startTime: `${form.date}T${form.startTime}:00Z`,
-        endTime: `${form.date}T${form.endTime}:00Z`,
-        color: form.color,
-      };
-      if (editingId !== null) {
-        await updateEvent(token, editingId, payload);
-        setEvents(prev => prev.map(e => e.id === editingId ? { ...e, ...payload } : e));
-      } else {
-        const created = await createEvent(token, payload);
-        setEvents(prev => [...prev, created]);
-      }
-      setDialogOpen(false);
-    } catch {
-      setError('Failed to save event.');
-    } finally {
-      setSaving(false);
+    const payload = {
+      title: form.title.trim(),
+      description: form.description.trim() || null,
+      startTime: `${form.date}T${form.startTime}:00Z`,
+      endTime: `${form.date}T${form.endTime}:00Z`,
+      color: form.color,
+    };
+    if (editingId !== null) {
+      await dispatch(updateEventThunk({ id: editingId, event: payload }));
+    } else {
+      await dispatch(createEventThunk(payload));
     }
+    setSaving(false);
+    setDialogOpen(false);
   }
 
   async function handleDeleteEvent(id: number) {
-    try {
-      await deleteEvent(token, id);
-      setEvents(prev => prev.filter(e => e.id !== id));
-      if (selectedId === id) setSelectedId(null);
-      setDialogOpen(false);
-    } catch {
-      setError('Failed to delete event.');
-    }
+    await dispatch(deleteEventThunk(id));
+    setDialogOpen(false);
   }
 
   function handleImagePick(e: React.ChangeEvent<HTMLInputElement>) {
@@ -317,44 +294,13 @@ export default function EventsPage({ token }: Props) {
   async function handleCreatePost() {
     if (!selectedId || !newPostText.trim()) return;
     setPostSubmitting(true);
-    try {
-      const post = await createPost(token, selectedId, newPostText.trim(), newPostImage ?? undefined);
-      setPosts(prev => [post, ...prev]);
-      setNewPostText('');
-      setNewPostImage(null);
-    } catch {
-      setError('Failed to create post.');
-    } finally {
-      setPostSubmitting(false);
-    }
+    await dispatch(createPostThunk({ eventId: selectedId, content: newPostText.trim(), imageData: newPostImage ?? undefined }));
+    setNewPostText('');
+    setNewPostImage(null);
+    setPostSubmitting(false);
   }
 
-  async function handleDeletePost(postId: number) {
-    if (!selectedId) return;
-    try {
-      await deletePost(token, selectedId, postId);
-      setPosts(prev => prev.filter(p => p.id !== postId));
-    } catch {
-      setError('Failed to delete post.');
-    }
-  }
-
-  function handleCommentAdded(postId: number, comment: PostComment) {
-    setPosts(prev => prev.map(p => p.id === postId ? { ...p, comments: [...p.comments, comment] } : p));
-  }
-
-  async function handleCommentDeleted(postId: number, commentId: number) {
-    if (!selectedId) return;
-    try {
-      await deleteComment(token, selectedId, postId, commentId);
-      setPosts(prev => prev.map(p => p.id === postId
-        ? { ...p, comments: p.comments.filter(c => c.id !== commentId) }
-        : p
-      ));
-    } catch {
-      setError('Failed to delete comment.');
-    }
-  }
+  const error = eventsError || postsError;
 
   return (
     <Box>
@@ -364,7 +310,11 @@ export default function EventsPage({ token }: Props) {
         <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>Add Event</Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => { dispatch(clearEventsError()); dispatch(clearPostsError()); }}>
+          {error}
+        </Alert>
+      )}
 
       {/* Top: select list + detail view */}
       <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start', mb: 3 }}>
@@ -376,7 +326,9 @@ export default function EventsPage({ token }: Props) {
             <Typography variant="body2" color="text.secondary">Don&apos;t miss scheduled events</Typography>
           </Box>
           <Divider />
-          {upcoming.length === 0 ? (
+          {eventsStatus === 'loading' ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}><CircularProgress size={24} /></Box>
+          ) : upcoming.length === 0 ? (
             <Typography variant="body2" color="text.secondary" sx={{ p: 2.5 }}>No upcoming events</Typography>
           ) : (
             <Box component="ul" sx={{ m: 0, p: 0, listStyle: 'none' }}>
@@ -387,7 +339,7 @@ export default function EventsPage({ token }: Props) {
                   <Box
                     key={ev.id}
                     component="li"
-                    onClick={() => setSelectedId(isSelected ? null : ev.id)}
+                    onClick={() => dispatch(setSelectedId(isSelected ? null : ev.id))}
                     sx={{
                       display: 'flex', alignItems: 'center', gap: 1.5, px: 2, py: 1.5,
                       cursor: 'pointer', borderLeft: 3,
@@ -510,7 +462,7 @@ export default function EventsPage({ token }: Props) {
             </Box>
 
             {/* Posts list */}
-            {postsLoading ? (
+            {postsStatus === 'loading' ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress /></Box>
             ) : posts.length === 0 ? (
               <Box sx={{ bgcolor: 'background.paper', borderRadius: 3, border: 1, borderColor: 'divider', p: 4, textAlign: 'center', color: 'text.secondary' }}>
@@ -518,15 +470,7 @@ export default function EventsPage({ token }: Props) {
               </Box>
             ) : (
               posts.map(post => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  token={token}
-                  eventId={selectedId!}
-                  onDelete={handleDeletePost}
-                  onCommentAdded={handleCommentAdded}
-                  onCommentDeleted={handleCommentDeleted}
-                />
+                <PostCard key={post.id} post={post} eventId={selectedId!} />
               ))
             )}
           </Box>

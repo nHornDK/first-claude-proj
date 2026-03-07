@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getMe, updateMe, changePassword } from '../api';
-import type { User } from '../types';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchProfileThunk, updateProfileThunk, changePasswordThunk } from '../store/slices/profileSlice';
 import {
   Box,
   Card,
@@ -11,12 +11,10 @@ import {
   Alert,
 } from '@mui/material';
 
-interface Props {
-  token: string;
-}
+export default function ProfilePage() {
+  const dispatch = useAppDispatch();
+  const { user, status } = useAppSelector(state => state.profile);
 
-export default function ProfilePage({ token }: Props) {
-  const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [profileMsg, setProfileMsg] = useState<{ text: string; ok: boolean } | null>(null);
@@ -29,26 +27,27 @@ export default function ProfilePage({ token }: Props) {
   const [savingPassword, setSavingPassword] = useState(false);
 
   useEffect(() => {
-    getMe(token).then((u) => {
-      setUser(u);
-      setEmail(u.email ?? '');
-      setDisplayName(u.displayName ?? '');
-    });
-  }, [token]);
+    dispatch(fetchProfileThunk());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email ?? '');
+      setDisplayName(user.displayName ?? '');
+    }
+  }, [user]);
 
   async function handleProfileSave(e: React.FormEvent) {
     e.preventDefault();
     setSavingProfile(true);
     setProfileMsg(null);
-    try {
-      await updateMe(token, email.trim() || null, displayName.trim() || null);
-      setUser((u) => u && { ...u, email: email.trim() || null, displayName: displayName.trim() || null });
+    const result = await dispatch(updateProfileThunk({ email: email.trim() || null, displayName: displayName.trim() || null }));
+    if (updateProfileThunk.fulfilled.match(result)) {
       setProfileMsg({ text: 'Profile updated.', ok: true });
-    } catch {
+    } else {
       setProfileMsg({ text: 'Failed to update profile.', ok: false });
-    } finally {
-      setSavingProfile(false);
     }
+    setSavingProfile(false);
   }
 
   async function handlePasswordChange(e: React.FormEvent) {
@@ -59,20 +58,19 @@ export default function ProfilePage({ token }: Props) {
     }
     setSavingPassword(true);
     setPasswordMsg(null);
-    try {
-      await changePassword(token, currentPassword, newPassword);
+    const result = await dispatch(changePasswordThunk({ currentPassword, newPassword }));
+    if (changePasswordThunk.fulfilled.match(result)) {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       setPasswordMsg({ text: 'Password changed successfully.', ok: true });
-    } catch (err) {
-      setPasswordMsg({ text: err instanceof Error ? err.message : 'Failed to change password.', ok: false });
-    } finally {
-      setSavingPassword(false);
+    } else {
+      setPasswordMsg({ text: (result.payload as string) ?? 'Failed to change password.', ok: false });
     }
+    setSavingPassword(false);
   }
 
-  if (!user) {
+  if (status === 'loading' || !user) {
     return (
       <Box>
         <Typography color="text.secondary">Loading...</Typography>

@@ -1,13 +1,12 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ProfilePage from './ProfilePage';
 import * as api from '../api';
+import { renderWithStore, withAuth } from '../test-utils';
 import type { User } from '../types';
 
 vi.mock('../api');
-
-const TOKEN = 'test-token';
 
 const mockUser: User = {
   id: 1,
@@ -23,7 +22,7 @@ describe('ProfilePage', () => {
   });
 
   it('renders user info after loading', async () => {
-    render(<ProfilePage token={TOKEN} />);
+    renderWithStore(<ProfilePage />, withAuth);
     await waitFor(() => expect(screen.getByDisplayValue('admin')).toBeInTheDocument());
     expect(screen.getByDisplayValue('Admin User')).toBeInTheDocument();
     expect(screen.getByDisplayValue('admin@example.com')).toBeInTheDocument();
@@ -31,7 +30,7 @@ describe('ProfilePage', () => {
 
   it('saves profile changes successfully', async () => {
     vi.mocked(api.updateMe).mockResolvedValue(undefined);
-    render(<ProfilePage token={TOKEN} />);
+    renderWithStore(<ProfilePage />, withAuth);
     await waitFor(() => screen.getByDisplayValue('Admin User'));
 
     const displayNameInput = screen.getByLabelText(/display name/i);
@@ -40,12 +39,12 @@ describe('ProfilePage', () => {
     await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
 
     await waitFor(() => expect(screen.getByText(/profile updated/i)).toBeInTheDocument());
-    expect(api.updateMe).toHaveBeenCalledWith(TOKEN, 'admin@example.com', 'New Name');
+    expect(api.updateMe).toHaveBeenCalledWith('test-token', 'admin@example.com', 'New Name');
   });
 
   it('shows an error when profile save fails', async () => {
     vi.mocked(api.updateMe).mockRejectedValue(new Error('Server error'));
-    render(<ProfilePage token={TOKEN} />);
+    renderWithStore(<ProfilePage />, withAuth);
     await waitFor(() => screen.getByDisplayValue('Admin User'));
 
     await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
@@ -56,7 +55,7 @@ describe('ProfilePage', () => {
   });
 
   it('shows an error when new passwords do not match', async () => {
-    render(<ProfilePage token={TOKEN} />);
+    renderWithStore(<ProfilePage />, withAuth);
     await waitFor(() => screen.getByDisplayValue('admin'));
 
     await userEvent.type(screen.getByLabelText(/current password/i), 'oldpass');
@@ -70,7 +69,7 @@ describe('ProfilePage', () => {
 
   it('changes password successfully', async () => {
     vi.mocked(api.changePassword).mockResolvedValue(undefined);
-    render(<ProfilePage token={TOKEN} />);
+    renderWithStore(<ProfilePage />, withAuth);
     await waitFor(() => screen.getByDisplayValue('admin'));
 
     await userEvent.type(screen.getByLabelText(/current password/i), 'oldpass');
@@ -81,12 +80,12 @@ describe('ProfilePage', () => {
     await waitFor(() =>
       expect(screen.getByText(/password changed successfully/i)).toBeInTheDocument()
     );
-    expect(api.changePassword).toHaveBeenCalledWith(TOKEN, 'oldpass', 'newpass');
+    expect(api.changePassword).toHaveBeenCalledWith('test-token', 'oldpass', 'newpass');
   });
 
   it('shows an error when password change fails', async () => {
     vi.mocked(api.changePassword).mockRejectedValue(new Error('Wrong current password'));
-    render(<ProfilePage token={TOKEN} />);
+    renderWithStore(<ProfilePage />, withAuth);
     await waitFor(() => screen.getByDisplayValue('admin'));
 
     await userEvent.type(screen.getByLabelText(/current password/i), 'wrongpass');

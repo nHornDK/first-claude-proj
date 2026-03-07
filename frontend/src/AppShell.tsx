@@ -1,24 +1,17 @@
 import {
+  AppBar,
   Box,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
+  Toolbar,
   Tooltip,
-  Avatar,
   Divider,
   IconButton,
+  Button,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh';
 import LogoutIcon from '@mui/icons-material/Logout';
-
-const DRAWER_WIDTH = 64;
 
 interface Props {
   onLogout: () => void;
@@ -31,88 +24,54 @@ export default function AppShell({ onLogout, toggleColorMode }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const navItems = [
+    { path: '/items', label: 'Items' },
+    { path: '/events', label: 'Events' },
+    { path: '/profile', label: 'Profile' },
+  ];
+
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: DRAWER_WIDTH,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: DRAWER_WIDTH,
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            py: 1,
-            overflowX: 'hidden',
-          },
-        }}
-      >
-        <Avatar sx={{ width: 36, height: 36, mb: 1, bgcolor: 'primary.main', fontSize: '0.9rem' }}>
-          D
-        </Avatar>
-        <Divider sx={{ width: '80%', mb: 1 }} />
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <AppBar position="sticky" color="default" elevation={1}>
+        <Toolbar variant="dense" sx={{ gap: 0.5 }}>
+          <Box component="img" src="/dendo-logo.svg" alt="Dendo" sx={{ height: 32, mr: 1 }} />
 
-        <List disablePadding sx={{ flex: 1, width: '100%' }}>
-          <Tooltip title="Items" placement="right">
-            <ListItemButton
-              selected={location.pathname === '/items'}
-              onClick={() => navigate('/items')}
-              sx={{ justifyContent: 'center', py: 1.5 }}
+          <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+
+          {navItems.map(({ path, label }) => (
+            <Button
+              key={path}
+              onClick={() => navigate(path)}
+              color={location.pathname === path ? 'primary' : 'inherit'}
+              sx={{ fontWeight: location.pathname === path ? 700 : 400 }}
             >
-              <ListItemIcon sx={{ minWidth: 0, color: location.pathname === '/items' ? 'primary.main' : 'text.secondary' }}>
-                <ListAltIcon />
-              </ListItemIcon>
-            </ListItemButton>
+              {label}
+            </Button>
+          ))}
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+
+          <Tooltip title={isDark ? 'Light mode' : 'Dark mode'}>
+            <IconButton onClick={toggleColorMode} size="small">
+              {isDark ? <BrightnessHighIcon /> : <Brightness4Icon />}
+            </IconButton>
           </Tooltip>
 
-          <Tooltip title="Calendar" placement="right">
-            <ListItemButton
-              selected={location.pathname === '/events'}
-              onClick={() => navigate('/events')}
-              sx={{ justifyContent: 'center', py: 1.5 }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, color: location.pathname === '/events' ? 'primary.main' : 'text.secondary' }}>
-                <CalendarTodayIcon />
-              </ListItemIcon>
-            </ListItemButton>
+          <Tooltip title="Logout">
+            <IconButton onClick={onLogout} size="small" color="default" aria-label="Logout">
+              <LogoutIcon />
+            </IconButton>
           </Tooltip>
-
-          <Tooltip title="Profile" placement="right">
-            <ListItemButton
-              selected={location.pathname === '/profile'}
-              onClick={() => navigate('/profile')}
-              sx={{ justifyContent: 'center', py: 1.5 }}
-            >
-              <ListItemIcon sx={{ minWidth: 0, color: location.pathname === '/profile' ? 'primary.main' : 'text.secondary' }}>
-                <AccountCircleIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </Tooltip>
-        </List>
-
-        <Divider sx={{ width: '80%', my: 1 }} />
-
-        <Tooltip title={isDark ? 'Light mode' : 'Dark mode'} placement="right">
-          <IconButton onClick={toggleColorMode} sx={{ mb: 0.5 }}>
-            {isDark ? <BrightnessHighIcon /> : <Brightness4Icon />}
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Logout" placement="right">
-          <IconButton onClick={onLogout} sx={{ mb: 1, color: 'text.secondary' }} aria-label="Logout">
-            <LogoutIcon />
-          </IconButton>
-        </Tooltip>
-      </Drawer>
+        </Toolbar>
+      </AppBar>
 
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           bgcolor: 'background.default',
-          minHeight: '100vh',
           p: 3,
         }}
       >

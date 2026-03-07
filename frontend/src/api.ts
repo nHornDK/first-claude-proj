@@ -6,6 +6,14 @@ function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
 }
 
+async function apiFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
+  const res = await fetch(input, init);
+  if (res.status === 401) {
+    window.dispatchEvent(new Event('auth:unauthorized'));
+  }
+  return res;
+}
+
 export async function login(username: string, password: string): Promise<string> {
   const res = await fetch(`${BASE_URL}/auth/login`, {
     method: 'POST',
@@ -32,13 +40,13 @@ export async function signup(username: string, password: string): Promise<string
 }
 
 export async function getMe(token: string): Promise<User> {
-  const res = await fetch(`${BASE_URL}/user/me`, { headers: authHeaders(token) });
+  const res = await apiFetch(`${BASE_URL}/user/me`, { headers: authHeaders(token) });
   if (!res.ok) throw new Error('Failed to fetch profile');
   return res.json();
 }
 
 export async function updateMe(token: string, email: string | null, displayName: string | null): Promise<void> {
-  const res = await fetch(`${BASE_URL}/user/me`, {
+  const res = await apiFetch(`${BASE_URL}/user/me`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ email, displayName }),
@@ -47,7 +55,7 @@ export async function updateMe(token: string, email: string | null, displayName:
 }
 
 export async function changePassword(token: string, currentPassword: string, newPassword: string): Promise<void> {
-  const res = await fetch(`${BASE_URL}/user/me/password`, {
+  const res = await apiFetch(`${BASE_URL}/user/me/password`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ currentPassword, newPassword }),
@@ -59,13 +67,13 @@ export async function changePassword(token: string, currentPassword: string, new
 }
 
 export async function fetchItems(token: string): Promise<Item[]> {
-  const res = await fetch(`${BASE_URL}/items`, { headers: authHeaders(token) });
+  const res = await apiFetch(`${BASE_URL}/items`, { headers: authHeaders(token) });
   if (!res.ok) throw new Error('Failed to fetch items');
   return res.json();
 }
 
 export async function createItem(token: string, name: string, description: string): Promise<Item> {
-  const res = await fetch(`${BASE_URL}/items`, {
+  const res = await apiFetch(`${BASE_URL}/items`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ name, description }),
@@ -75,7 +83,7 @@ export async function createItem(token: string, name: string, description: strin
 }
 
 export async function updateItem(token: string, id: number, name: string, description: string): Promise<void> {
-  const res = await fetch(`${BASE_URL}/items/${id}`, {
+  const res = await apiFetch(`${BASE_URL}/items/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ id, name, description }),
@@ -84,7 +92,7 @@ export async function updateItem(token: string, id: number, name: string, descri
 }
 
 export async function deleteItem(token: string, id: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/items/${id}`, {
+  const res = await apiFetch(`${BASE_URL}/items/${id}`, {
     method: 'DELETE',
     headers: authHeaders(token),
   });
@@ -92,13 +100,13 @@ export async function deleteItem(token: string, id: number): Promise<void> {
 }
 
 export async function fetchEvents(token: string): Promise<CalendarEvent[]> {
-  const res = await fetch(`${BASE_URL}/events`, { headers: authHeaders(token) });
+  const res = await apiFetch(`${BASE_URL}/events`, { headers: authHeaders(token) });
   if (!res.ok) throw new Error('Failed to fetch events');
   return res.json();
 }
 
 export async function createEvent(token: string, event: Omit<CalendarEvent, 'id'>): Promise<CalendarEvent> {
-  const res = await fetch(`${BASE_URL}/events`, {
+  const res = await apiFetch(`${BASE_URL}/events`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify(event),
@@ -108,7 +116,7 @@ export async function createEvent(token: string, event: Omit<CalendarEvent, 'id'
 }
 
 export async function updateEvent(token: string, id: number, event: Omit<CalendarEvent, 'id'>): Promise<void> {
-  const res = await fetch(`${BASE_URL}/events/${id}`, {
+  const res = await apiFetch(`${BASE_URL}/events/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify(event),
@@ -117,7 +125,7 @@ export async function updateEvent(token: string, id: number, event: Omit<Calenda
 }
 
 export async function deleteEvent(token: string, id: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/events/${id}`, {
+  const res = await apiFetch(`${BASE_URL}/events/${id}`, {
     method: 'DELETE',
     headers: authHeaders(token),
   });
@@ -125,13 +133,13 @@ export async function deleteEvent(token: string, id: number): Promise<void> {
 }
 
 export async function fetchPosts(token: string, eventId: number): Promise<Post[]> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/posts`, { headers: authHeaders(token) });
+  const res = await apiFetch(`${BASE_URL}/events/${eventId}/posts`, { headers: authHeaders(token) });
   if (!res.ok) throw new Error('Failed to fetch posts');
   return res.json();
 }
 
 export async function createPost(token: string, eventId: number, content: string, imageData?: string): Promise<Post> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/posts`, {
+  const res = await apiFetch(`${BASE_URL}/events/${eventId}/posts`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ content, imageData: imageData ?? null }),
@@ -141,7 +149,7 @@ export async function createPost(token: string, eventId: number, content: string
 }
 
 export async function deletePost(token: string, eventId: number, postId: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/posts/${postId}`, {
+  const res = await apiFetch(`${BASE_URL}/events/${eventId}/posts/${postId}`, {
     method: 'DELETE',
     headers: authHeaders(token),
   });
@@ -149,7 +157,7 @@ export async function deletePost(token: string, eventId: number, postId: number)
 }
 
 export async function createComment(token: string, eventId: number, postId: number, content: string): Promise<PostComment> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/posts/${postId}/comments`, {
+  const res = await apiFetch(`${BASE_URL}/events/${eventId}/posts/${postId}/comments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ content }),
@@ -159,7 +167,7 @@ export async function createComment(token: string, eventId: number, postId: numb
 }
 
 export async function deleteComment(token: string, eventId: number, postId: number, commentId: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/events/${eventId}/posts/${postId}/comments/${commentId}`, {
+  const res = await apiFetch(`${BASE_URL}/events/${eventId}/posts/${postId}/comments/${commentId}`, {
     method: 'DELETE',
     headers: authHeaders(token),
   });

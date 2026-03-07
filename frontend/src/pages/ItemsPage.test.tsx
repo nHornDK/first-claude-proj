@@ -1,13 +1,12 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ItemsPage from './ItemsPage';
 import * as api from '../api';
+import { renderWithStore, withAuth } from '../test-utils';
 import type { Item } from '../types';
 
 vi.mock('../api');
-
-const TOKEN = 'test-token';
 
 const mockItems: Item[] = [
   { id: 1, name: 'First Item', description: 'A description', createdAt: '2024-01-01T00:00:00Z' },
@@ -21,21 +20,21 @@ describe('ItemsPage', () => {
   });
 
   it('renders items after loading', async () => {
-    render(<ItemsPage token={TOKEN} />);
+    renderWithStore(<ItemsPage />, withAuth);
     await waitFor(() => expect(screen.getByText('First Item')).toBeInTheDocument());
     expect(screen.getByText('Second Item')).toBeInTheDocument();
   });
 
   it('shows empty state when there are no items', async () => {
     vi.mocked(api.fetchItems).mockResolvedValue([]);
-    render(<ItemsPage token={TOKEN} />);
+    renderWithStore(<ItemsPage />, withAuth);
     await waitFor(() => expect(screen.getByText(/no items yet/i)).toBeInTheDocument());
   });
 
   it('creates a new item and appends it to the list', async () => {
     const newItem: Item = { id: 3, name: 'New Item', description: 'desc', createdAt: '2024-01-03T00:00:00Z' };
     vi.mocked(api.createItem).mockResolvedValue(newItem);
-    render(<ItemsPage token={TOKEN} />);
+    renderWithStore(<ItemsPage />, withAuth);
     await waitFor(() => screen.getByText('First Item'));
 
     await userEvent.type(screen.getByLabelText(/name/i), 'New Item');
@@ -43,23 +42,23 @@ describe('ItemsPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /add item/i }));
 
     await waitFor(() => expect(screen.getByText('New Item')).toBeInTheDocument());
-    expect(api.createItem).toHaveBeenCalledWith(TOKEN, 'New Item', 'desc');
+    expect(api.createItem).toHaveBeenCalledWith('test-token', 'New Item', 'desc');
   });
 
   it('deletes an item and removes it from the list', async () => {
     vi.mocked(api.deleteItem).mockResolvedValue(undefined);
-    render(<ItemsPage token={TOKEN} />);
+    renderWithStore(<ItemsPage />, withAuth);
     await waitFor(() => screen.getByText('First Item'));
 
     await userEvent.click(screen.getAllByRole('button', { name: /delete/i })[0]);
 
     await waitFor(() => expect(screen.queryByText('First Item')).not.toBeInTheDocument());
-    expect(api.deleteItem).toHaveBeenCalledWith(TOKEN, 1);
+    expect(api.deleteItem).toHaveBeenCalledWith('test-token', 1);
   });
 
   it('edits an item and updates the list', async () => {
     vi.mocked(api.updateItem).mockResolvedValue(undefined);
-    render(<ItemsPage token={TOKEN} />);
+    renderWithStore(<ItemsPage />, withAuth);
     await waitFor(() => screen.getByText('First Item'));
 
     await userEvent.click(screen.getAllByRole('button', { name: /edit/i })[0]);
@@ -71,12 +70,12 @@ describe('ItemsPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     await waitFor(() => expect(screen.getByText('Updated Item')).toBeInTheDocument());
-    expect(api.updateItem).toHaveBeenCalledWith(TOKEN, 1, 'Updated Item', 'A description');
+    expect(api.updateItem).toHaveBeenCalledWith('test-token', 1, 'Updated Item', 'A description');
   });
 
   it('shows an error when item creation fails', async () => {
     vi.mocked(api.createItem).mockRejectedValue(new Error('Server error'));
-    render(<ItemsPage token={TOKEN} />);
+    renderWithStore(<ItemsPage />, withAuth);
     await waitFor(() => screen.getByText('First Item'));
 
     await userEvent.type(screen.getByLabelText(/name/i), 'Bad Item');

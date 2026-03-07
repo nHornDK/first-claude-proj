@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchItems, createItem, updateItem, deleteItem } from '../api';
-import type { Item } from '../types';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchItemsThunk, createItemThunk, updateItemThunk, deleteItemThunk, clearError } from '../store/slices/itemsSlice';
 import {
   Box,
   Typography,
@@ -21,19 +21,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-interface Props {
-  token: string;
-}
-
 interface EditState {
   id: number;
   name: string;
   description: string;
 }
 
-export default function ItemsPage({ token }: Props) {
-  const [items, setItems] = useState<Item[]>([]);
-  const [error, setError] = useState('');
+export default function ItemsPage() {
+  const dispatch = useAppDispatch();
+  const { items, status, error } = useAppSelector(state => state.items);
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -41,64 +38,37 @@ export default function ItemsPage({ token }: Props) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchItems(token)
-      .then(setItems)
-      .catch(() => setError('Failed to load items.'));
-  }, [token]);
+    dispatch(fetchItemsThunk());
+  }, [dispatch]);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
     setSubmitting(true);
-    try {
-      const item = await createItem(token, name.trim(), description.trim());
-      setItems((prev) => [...prev, item]);
-      setName('');
-      setDescription('');
-    } catch {
-      setError('Failed to create item.');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  function startEdit(item: Item) {
-    setEditing({ id: item.id, name: item.name, description: item.description ?? '' });
+    await dispatch(createItemThunk({ name: name.trim(), description: description.trim() }));
+    setName('');
+    setDescription('');
+    setSubmitting(false);
   }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
     setSaving(true);
-    try {
-      await updateItem(token, editing.id, editing.name.trim(), editing.description.trim());
-      setItems((prev) =>
-        prev.map((i) =>
-          i.id === editing.id ? { ...i, name: editing.name.trim(), description: editing.description.trim() } : i
-        )
-      );
-      setEditing(null);
-    } catch {
-      setError('Failed to save item.');
-    } finally {
-      setSaving(false);
-    }
+    await dispatch(updateItemThunk({ id: editing.id, name: editing.name.trim(), description: editing.description.trim() }));
+    setEditing(null);
+    setSaving(false);
   }
 
   async function handleDelete(id: number) {
-    try {
-      await deleteItem(token, id);
-      setItems((prev) => prev.filter((i) => i.id !== id));
-    } catch {
-      setError('Failed to delete item.');
-    }
+    dispatch(deleteItemThunk(id));
   }
 
   return (
     <Box>
       <Typography variant="h5" fontWeight={700} mb={3}>Items</Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => dispatch(clearError())}>{error}</Alert>}
 
       <Box component="form" onSubmit={handleCreate} sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap' }}>
         <TextField
@@ -116,7 +86,7 @@ export default function ItemsPage({ token }: Props) {
           size="small"
           sx={{ flex: 2, minWidth: 200 }}
         />
-        <Button type="submit" variant="contained" disabled={submitting}>
+        <Button type="submit" variant="contained" disabled={submitting || status === 'loading'}>
           {submitting ? 'Adding...' : 'Add Item'}
         </Button>
       </Box>
@@ -175,7 +145,7 @@ export default function ItemsPage({ token }: Props) {
                     <TableCell>{item.description ?? '—'}</TableCell>
                     <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <IconButton onClick={() => startEdit(item)} aria-label="Edit" size="small">
+                      <IconButton onClick={() => setEditing({ id: item.id, name: item.name, description: item.description ?? '' })} aria-label="Edit" size="small">
                         <EditIcon />
                       </IconButton>
                       <IconButton onClick={() => handleDelete(item.id)} aria-label="Delete" size="small" color="error">

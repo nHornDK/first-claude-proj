@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 262 68" width="262" height="68">
+
+  <!-- Geometric 'd' mark: stroke-based, no background badge -->
+  <!-- Bowl -->
+  <circle cx="24" cy="44" r="18"
+          fill="none" stroke="#2563eb" stroke-width="5.5"/>
+  <!-- Ascender bar -->
+  <line x1="42" y1="16" x2="42" y2="62"
+        stroke="#2563eb" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- Accent dot at top of bar -->
+  <circle cx="42" cy="14" r="4" fill="#2563eb"/>
+
+  <!-- Wordmark -->
+  <text
+    x="66" y="51"
+    font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+    font-size="40"
+    font-weight="700"
+    letter-spacing="-1.5"
+    fill="#111827"
+  >dendo</text>
+
+</svg>
