@@ -12,7 +12,7 @@ CONTAINER="${3:-dendo_container}"
 
 # aws ecs update-service --cluster "$CLUSTER" --service "$CONTAINER" --enable-execute-command --region eu-north-1
 
-aws ecs update-service --cluster "$CLUSTER" --service "$dendo_service" --force-new-deployment --enable-execute-command
+# aws ecs update-service --cluster "$CLUSTER" --service "$dendo_service" --force-new-deployment --enable-execute-command
 
 TASK_ARN=$(aws ecs list-tasks \
  --cluster "$CLUSTER" \
