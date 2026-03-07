@@ -8,8 +8,9 @@ import postsReducer from './store/slices/postsSlice';
 import profileReducer from './store/slices/profileSlice';
 import type { RootState } from './store';
 
+
 export function makeStore(preloadedState?: Partial<RootState>) {
-  return configureStore({
+  return configureStore<RootState>({
     reducer: {
       auth: authReducer,
       items: itemsReducer,
@@ -17,7 +18,7 @@ export function makeStore(preloadedState?: Partial<RootState>) {
       posts: postsReducer,
       profile: profileReducer,
     },
-    preloadedState,
+    preloadedState: preloadedState as RootState,
   });
 }
 
