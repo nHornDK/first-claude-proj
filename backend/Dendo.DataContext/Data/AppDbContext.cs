@@ -8,4 +8,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ItemEntity> Items => Set<ItemEntity>();
     public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<EventEntity> Events => Set<EventEntity>();
+    public DbSet<PostEntity> Posts => Set<PostEntity>();
+    public DbSet<CommentEntity> Comments => Set<CommentEntity>();
 }

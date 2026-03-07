@@ -1,4 +1,4 @@
-import type { Item, User, CalendarEvent } from './types';
+import type { Item, User, CalendarEvent, Post, PostComment } from './types';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -122,4 +122,46 @@ export async function deleteEvent(token: string, id: number): Promise<void> {
     headers: authHeaders(token),
   });
   if (!res.ok) throw new Error('Failed to delete event');
+}
+
+export async function fetchPosts(token: string, eventId: number): Promise<Post[]> {
+  const res = await fetch(`${BASE_URL}/events/${eventId}/posts`, { headers: authHeaders(token) });
+  if (!res.ok) throw new Error('Failed to fetch posts');
+  return res.json();
+}
+
+export async function createPost(token: string, eventId: number, content: string, imageData?: string): Promise<Post> {
+  const res = await fetch(`${BASE_URL}/events/${eventId}/posts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+    body: JSON.stringify({ content, imageData: imageData ?? null }),
+  });
+  if (!res.ok) throw new Error('Failed to create post');
+  return res.json();
+}
+
+export async function deletePost(token: string, eventId: number, postId: number): Promise<void> {
+  const res = await fetch(`${BASE_URL}/events/${eventId}/posts/${postId}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw new Error('Failed to delete post');
+}
+
+export async function createComment(token: string, eventId: number, postId: number, content: string): Promise<PostComment> {
+  const res = await fetch(`${BASE_URL}/events/${eventId}/posts/${postId}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) throw new Error('Failed to create comment');
+  return res.json();
+}
+
+export async function deleteComment(token: string, eventId: number, postId: number, commentId: number): Promise<void> {
+  const res = await fetch(`${BASE_URL}/events/${eventId}/posts/${postId}/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw new Error('Failed to delete comment');
 }

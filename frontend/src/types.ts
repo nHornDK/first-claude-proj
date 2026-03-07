@@ -20,3 +20,21 @@ export interface CalendarEvent {
   endTime: string;
   color: string;
 }
+
+export interface PostComment {
+  id: number;
+  content: string;
+  createdAt: string;
+  author: string;
+  isOwn: boolean;
+}
+
+export interface Post {
+  id: number;
+  content: string;
+  imageData: string | null;
+  createdAt: string;
+  author: string;
+  isOwn: boolean;
+  comments: PostComment[];
+}
