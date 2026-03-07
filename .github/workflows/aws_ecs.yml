@@ -71,7 +71,6 @@ jobs:
         run: |
           docker pull $CACHE_IMAGE || true
           docker build \
-            --cache-from $CACHE_IMAGE \
             --tag $API_IMAGE \
             backend/
           docker push $API_IMAGE
