@@ -88,7 +88,7 @@ using (var scope = app.Services.CreateScope())
     if (db.Database.IsRelational())
     {
         db.Database.Migrate();
-        db.Database.EnsureCreated();
+        
     }
 
     var users = scope.ServiceProvider.GetRequiredService<IUserRepository>();
